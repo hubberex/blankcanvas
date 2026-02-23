@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlankCanvas | Custom Paper Pro</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    if (window.jspdf) { window.jsPDF = window.jspdf.jsPDF; }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/2.2.4/svg2pdf.umd.min.js"></script>
+
+<style>
+:root {
+    --system-bg: #F2F2F7;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --label-sec: #8E8E93;
+    --olive-deep: #283618;
+    --olive-light: #606C38;
+    --clay: #BC6C25;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    margin: 0;
+    background: var(--system-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-header {
+    background: #FFF;
+    padding: 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+    color: var(--olive-deep);
+}
+
+.app-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {
+    background: var(--glass-bg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+}
+
+/* Updated rows to accommodate 3 items each */
+.compact-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 12px;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+label {
+    font-size: 10px;
+    color: var(--label-sec);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+select,
+input[type="number"],
+input[type="color"] {
+    background: rgba(120,120,128,0.08);
+    border: none;
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 13px;
+    width: 100%;
+    height: 38px;
+}
+
+input[type="color"] {
+    padding: 4px;
+    cursor: pointer;
+}
+
+.switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-toggle {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border-radius: 30px;
+    transition: .3s;
+}
+
+.slider-toggle:before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    top: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: .3s;
+}
+
+input:checked + .slider-toggle {
+    background: var(--olive-light);
+}
+
+input:checked + .slider-toggle:before {
+    transform: translateX(20px);
+}
+
+.slider-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 4px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 22px;
+    width: 22px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.segmented-control {
+    display: flex;
+    background: rgba(120,120,128,0.08);
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.btn-segment {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 6px;
+    font-weight: 600;
+    font-size: 11px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-segment.active {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.btn-main {
+    padding: 10px 2px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.btn-pdf { background: var(--clay); color: white; }
+.btn-print { background: transparent; border: 1.5px solid var(--olive-deep); color: var(--olive-deep); }
+.btn-svg { background: var(--olive-light); color: white; }
+.btn-png { background: #333; color: white; }
+
+/* ENLARGED VIEWPORT */
+.viewport {
+    flex: 1;
+    padding: 10px; /* Reduced padding for bigger area */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #E5E5EA;
+    overflow: auto;
+}
+
+.paper-container {
+    background: white;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    height: calc(1vh * var(--zoom, 85));
+    transition: height 0.1s ease-out;
+}
+
+#paper-preview {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+@media (min-width: 1024px) {
+    .app-wrapper { flex-direction: row; }
+    .top-bar {
+        width: 340px;
+        height: calc(100vh - 58px);
+        overflow-y: auto;
+        border-right: 0.5px solid rgba(0,0,0,0.1);
+    }
+    .viewport { padding: 40px; }
+}
+
+@media print {
+    body * { visibility: hidden; }
+    #paper-preview, #paper-preview * { visibility: visible; }
+    #paper-preview {
+        position: absolute; left: 0; top: 0;
+        width: 100%; height: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="brand-header">BlankCanvas</div>
+
+<div class="app-wrapper">
+    <div class="top-bar">
+        <div class="compact-row">
+            <div class="control-item">
+                <label>Template</label>
+                <select id="paperType" onchange="generatePaper()">
+                    <option value="habit">Habit</option>
+                    <option value="checklist">Checklist</option>
+                    <option value="cornell">Cornell</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="lined">Lined</option>
+                    <option value="grid">Grid</option>
+                    <option value="graph">Graph Paper</option>
+                    <option value="dotgrid" selected>Dot Grid</option>
+                    <option value="music">Music Staff</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>Size</label>
+                <select id="pageSize" onchange="updatePageLayout()">
+                    <option value="a4">A4</option>
+                    <option value="letter">Letter</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>Format</label>
+                <select id="orientation" onchange="updatePageLayout()">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="compact-row">
+            <div class="control-item">
+                <label>Pages</label>
+                <input type="number" id="pageCount" value="1" min="1" max="50">
+            </div>
+            <div class="control-item" style="align-items:center;">
+                <label>Holes</label>
+                <label class="switch">
+                    <input type="checkbox" id="holePunch" onchange="generatePaper()">
+                    <span class="slider-toggle"></span>
+                </label>
+            </div>
+            <div class="control-item">
+                <label>Color</label>
+                <input type="color" id="lineColor" value="#8E8E93" onchange="generatePaper()">
+            </div>
+        </div>
+        
+        <div class="slider-box">
+            <label id="zoom-label">Preview Zoom: 85%</label>
+            <input type="range" id="zoom" min="30" max="250" value="85" oninput="updateZoom()">
+        </div>
+
+        <div class="slider-box">
+            <label id="spacing-label">Spacing: 7.5mm</label>
+            <input type="range" id="spacing" min="10" max="80" value="30" oninput="updateUI('spacing')">
+        </div>
+
+        <div class="slider-box">
+            <label id="margin-label">Margin: 20mm</label>
+            <input type="range" id="margin" min="0" max="200" value="80" oninput="updateUI('margin')">
+        </div>
+
+        <div class="segmented-control">
+            <button class="btn-segment" onclick="quickMargin(0, this)">None</button>
+            <button class="btn-segment active" onclick="quickMargin(20, this)">Normal</button>
+            <button class="btn-segment" onclick="quickMargin(50, this)">Wide</button>
+        </div>
+
+        <div class="action-row">
+            <button id="btn-pdf" class="btn-main btn-pdf" onclick="exportPDF()">PDF</button>
+            <button class="btn-main btn-print" onclick="window.print()">Print</button>
+            <button class="btn-main btn-svg" onclick="exportSVG()">SVG</button>
+            <button class="btn-main btn-png" onclick="exportPNG()">PNG</button>
+        </div>
+    </div>
+
+    <div class="viewport">
+        <div class="paper-container" id="container">
+            <svg id="paper-preview"></svg>
+        </div>
+    </div>
+</div>
+
+<script>
+const svg = document.getElementById('paper-preview');
+const container = document.getElementById('container');
+let currentW = 210, currentH = 297;
+const titleSpace = 25;
+
+const templates = {
+    getGridBounds: (w, h, spacing, margin) => {
+        const sideMargin = margin || 10;
+        const bottomMargin = 15;
+        const usableW = w - (sideMargin * 2);
+        const cols = Math.floor(usableW / spacing);
+        const gridW = cols * spacing;
+        const startX = (w - gridW) / 2;
+        const usableH = h - titleSpace - bottomMargin;
+        const rows = Math.floor(usableH / spacing);
+        const gridH = rows * spacing;
+        const startY = titleSpace + ((usableH - gridH) / 2);
+        return { startX, startY, gridW, gridH, cols, rows };
+    },
+
+    habit: (w, h, spacing, margin, color) => {
+        let out = '';
+        const rowH = 6 + (spacing * 0.7);
+        const lblW = margin || 30;
+        const dayW = (w - lblW - 10) / 31;
+        const startY = titleSpace + 8;
+        out += `<g font-family="Helvetica" font-size="2" fill="${color}" text-anchor="middle" opacity="0.8">`;
+        for(let i=1; i<=31; i++) out += `<text x="${lblW + ((i - 0.5) * dayW)}" y="${startY - 3}">${i}</text>`;
+        out += `</g><line x1="${lblW}" y1="${startY - 8}" x2="${lblW}" y2="${h - 10}" stroke="${color}" stroke-width="0.3" opacity="0.5"/>`;
+        for (let y = startY; y < h - 15; y += rowH) {
+            out += `<line x1="10" y1="${y}" x2="${w - 10}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
+            for (let i = 0; i < 31; i++) out += `<circle cx="${lblW + (i * dayW) + dayW/2}" cy="${y + rowH/2}" r="${dayW * 0.35}" fill="none" stroke="${color}" stroke-width="0.1" />`;
+        }
+        return out;
+    },
+    
+    checklist: (w, h, spacing, margin, color) => {
+        let out = '';
+        const sections = ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"];
+        const sectionGap = (h - titleSpace - 20) / 4;
+        const side = margin || 15;
+        const col = (w - (side * 2)) / 2;
+        sections.forEach((title, idx) => {
+            let y = titleSpace + 5 + (idx * sectionGap);
+            out += `<text x="${side}" y="${y}" font-family="Helvetica" font-weight="bold" font-size="4" fill="${color}">${title}</text><line x1="${side}" y1="${y+2}" x2="${w-side}" y2="${y+2}" stroke="${color}" stroke-width="0.2"/>`;
+            let rowY = y + 12; 
+            const rows = Math.floor((sectionGap - 14) / spacing);
+            for (let i = 0; i < rows; i++) {
+                let cY = rowY + (i * spacing);
+                if (cY > y + sectionGap - 5) break;
+                out += `<rect x="${side}" y="${cY - 2.5}" width="2.5" height="2.5" fill="none" stroke="${color}" stroke-width="0.1" /><line x1="${side+4}" y1="${cY}" x2="${side+col-4}" y2="${cY}" stroke="${color}" stroke-width="0.05" opacity="0.5"/>`;
+                out += `<rect x="${side+col}" y="${cY - 2.5}" width="2.5" height="2.5" fill="none" stroke="${color}" stroke-width="0.1" /><line x1="${side+col+4}" y1="${cY}" x2="${w-side}" y2="${cY}" stroke="${color}" stroke-width="0.05" opacity="0.5"/>`;
+            }
+        });
+        return out;
+    },
+
+    cornell: (w, h, spacing, margin, color) => {
+        let out = '';
+        const cuesW = margin || 50; 
+        const summaryH = 40;
+        out += `<line x1="0" y1="${titleSpace}" x2="${w}" y2="${titleSpace}" stroke="${color}" stroke-width="0.5" opacity="0.6" />`;
+        out += `<line x1="0" y1="${h - summaryH}" x2="${w}" y2="${h - summaryH}" stroke="${color}" stroke-width="0.5" opacity="0.6" />`;
+        out += `<line x1="${cuesW}" y1="${titleSpace}" x2="${cuesW}" y2="${h - summaryH}" stroke="${color}" stroke-width="0.5" opacity="0.6" />`;
+        for (let y = titleSpace + spacing; y < h - summaryH; y += spacing) {
+            out += `<line x1="${cuesW}" y1="${y}" x2="${w}" y2="${y}" stroke="${color}" stroke-width="0.15" opacity="0.4" />`;
+        }
+        return out;
+    },
+
+    weekly: (w, h, spacing, margin, color) => {
+        let out = '';
+        const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+        const dayH = (h - titleSpace - 10) / 7;
+        for (let i = 0; i < 7; i++) {
+            let y = titleSpace + (i * dayH);
+            out += `<line x1="10" y1="${y}" x2="${w - 10}" y2="${y}" stroke="${color}" stroke-width="0.3" opacity="0.6" />`;
+            out += `<text x="${margin + 5 || 15}" y="${y + 5}" font-family="Helvetica" font-weight="bold" font-size="3" fill="${color}">${days[i]}</text>`;
+            for (let sY = y + 10; sY < y + dayH; sY += spacing) {
+                out += `<line x1="${margin + 5 || 15}" y1="${sY}" x2="${w - 15}" y2="${sY}" stroke="${color}" stroke-width="0.05" opacity="0.3" />`;
+            }
+        }
+        return out;
+    },
+
+    grid: (w, h, spacing, margin, color) => {
+        const b = templates.getGridBounds(w, h, spacing, margin);
+        let out = '';
+        for (let i = 0; i <= b.cols; i++) {
+            const x = b.startX + (i * spacing);
+            out += `<line x1="${x}" y1="${b.startY}" x2="${x}" y2="${b.startY + b.gridH}" stroke="${color}" stroke-width="0.1" opacity="0.4"/>`;
+        }
+        for (let i = 0; i <= b.rows; i++) {
+            const y = b.startY + (i * spacing);
+            out += `<line x1="${b.startX}" y1="${y}" x2="${b.startX + b.gridW}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.4"/>`;
+        }
+        out += `<rect x="${b.startX}" y="${b.startY}" width="${b.gridW}" height="${b.gridH}" fill="none" stroke="${color}" stroke-width="0.2" opacity="0.6"/>`;
+        return out;
+    },
+
+    graph: (w, h, spacing, margin, color) => {
+        const b = templates.getGridBounds(w, h, spacing, margin);
+        let out = '';
+        for (let i = 0; i <= b.cols; i++) {
+            const x = b.startX + (i * spacing);
+            const isMajor = (i % 5 === 0);
+            out += `<line x1="${x}" y1="${b.startY}" x2="${x}" y2="${b.startY + b.gridH}" stroke="${color}" stroke-width="${isMajor ? 0.3 : 0.1}" opacity="${isMajor ? 0.6 : 0.3}"/>`;
+        }
+        for (let i = 0; i <= b.rows; i++) {
+            const y = b.startY + (i * spacing);
+            const isMajor = (i % 5 === 0);
+            out += `<line x1="${b.startX}" y1="${y}" x2="${b.startX + b.gridW}" y2="${y}" stroke="${color}" stroke-width="${isMajor ? 0.3 : 0.1}" opacity="${isMajor ? 0.6 : 0.3}"/>`;
+        }
+        out += `<rect x="${b.startX}" y="${b.startY}" width="${b.gridW}" height="${b.gridH}" fill="none" stroke="${color}" stroke-width="0.4" opacity="0.8"/>`;
+        return out;
+    },
+
+    dotgrid: (w, h, spacing, margin, color) => {
+        const b = templates.getGridBounds(w, h, spacing, margin);
+        let out = `<g fill="${color}" opacity="0.6">`;
+        for (let i = 0; i <= b.cols; i++) {
+            for (let j = 0; j <= b.rows; j++) {
+                const radius = Math.max(0.4, spacing * 0.05);
+                out += `<circle cx="${b.startX + (i * spacing)}" cy="${b.startY + (j * spacing)}" r="${radius}"/>`;
+            }
+        }
+        out += `</g>`;
+        return out;
+    },
+
+    music: (w, h, spacing, margin, color) => {
+        let out = '';
+        const side = margin || 15;
+        const lineGap = Math.max(1.5, spacing * 0.3); 
+        const staffGap = spacing * 2.5; 
+        let y = titleSpace + spacing;
+        while (y + (4 * lineGap) < h - 15) {
+            for (let i = 0; i < 5; i++) {
+                const lineY = y + (i * lineGap);
+                out += `<line x1="${side}" y1="${lineY}" x2="${w - side}" y2="${lineY}" stroke="${color}" stroke-width="0.3" opacity="0.8"/>`;
+            }
+            out += `<line x1="${side}" y1="${y}" x2="${side}" y2="${y + 4 * lineGap}" stroke="${color}" stroke-width="0.6" opacity="0.8"/>`;
+            out += `<line x1="${w - side}" y1="${y}" x2="${w - side}" y2="${y + 4 * lineGap}" stroke="${color}" stroke-width="0.6" opacity="0.8"/>`;
+            y += (4 * lineGap) + staffGap; 
+        }
+        return out;
+    },
+
+    lined: (w, h, spacing, margin, color) => {
+        let out = '';
+        if (margin > 0) out += `<line x1="${margin}" y1="0" x2="${margin}" y2="${h}" stroke="#BC6C25" stroke-width="0.4" opacity="0.4"/>`;
+        for (let y = titleSpace+spacing; y < h-15; y += spacing)
+            out += `<line x1="${margin}" y1="${y}" x2="${w-10}" y2="${y}" stroke="${color}" stroke-width="0.15" opacity="0.6"/>`;
+        return out;
+    }
+};
+
+function updateZoom() {
+    const zoom = document.getElementById('zoom').value;
+    document.getElementById('zoom-label').innerText = `Preview Zoom: ${zoom}%`;
+    container.style.setProperty('--zoom', zoom);
+}
+
+function updatePageLayout() {
+    const size = document.getElementById('pageSize').value;
+    const orient = document.getElementById('orientation').value;
+    let w = (size === 'a4') ? 210 : 215.9;
+    let h = (size === 'a4') ? 297 : 279.4;
+    if (orient === 'landscape') [w, h] = [h, w];
+    currentW = w;
+    currentH = h;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    container.style.aspectRatio = `${w} / ${h}`;
+    generatePaper();
+}
+
+function updateUI(id) {
+    const val = document.getElementById(id).value;
+    if (id === 'spacing') document.getElementById('spacing-label').innerText = `Spacing: ${(val/4).toFixed(1)}mm`;
+    if (id === 'margin') {
+        document.getElementById('margin-label').innerText = `Margin: ${(val/4).toFixed(1)}mm`;
+        document.querySelectorAll('.btn-segment').forEach(b => b.classList.remove('active'));
+    }
+    generatePaper();
+}
+
+function quickMargin(mm, btn) {
+    document.getElementById('margin').value = mm * 4;
+    document.querySelectorAll('.btn-segment').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('margin-label').innerText = `Margin: ${mm}mm`;
+    generatePaper();
+}
+
+function generatePaper() {
+    const type = document.getElementById('paperType').value;
+    const spacing = parseInt(document.getElementById('spacing').value)/4;
+    const margin = parseInt(document.getElementById('margin').value)/4;
+    const color = document.getElementById('lineColor').value;
+    const showHolePunches = document.getElementById('holePunch').checked;
+
+    let content = `<rect width="100%" height="100%" fill="white"/>`;
+
+    if (showHolePunches) {
+        const holesY = [currentH * 0.15, currentH * 0.5, currentH * 0.85];
+        holesY.forEach(y => {
+            content += `<circle cx="12" cy="${y}" r="3.5" fill="none" stroke="#E5E5EA" stroke-width="0.3"/>`;
+        });
+    }
+
+    if (templates[type]) {
+        content += templates[type](currentW, currentH, spacing, margin, color);
+    }
+    svg.innerHTML = content;
+}
+
+async function exportPDF() {
+    const btn = document.getElementById('btn-pdf');
+    const originalText = btn.innerText;
+    try {
+        btn.innerText = "Generating...";
+        btn.disabled = true;
+        await new Promise(r => setTimeout(r, 50));
+        const { jsPDF } = window.jspdf;
+        const orient = document.getElementById('orientation').value[0]; 
+        const pdf = new jsPDF(orient, 'mm', document.getElementById('pageSize').value);
+        const count = parseInt(document.getElementById('pageCount').value) || 1;
+        const svgElement = document.getElementById('paper-preview');
+
+        if (typeof pdf.svg === 'function') {
+            for (let i = 0; i < count; i++) {
+                if (i > 0) pdf.addPage();
+                await pdf.svg(svgElement, { x: 0, y: 0, width: currentW, height: currentH });
+            }
+        } 
+        else {
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const img = new Image();
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+            });
+            const canvas = document.createElement('canvas');
+            canvas.width = currentW * 4; canvas.height = currentH * 4;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            for (let i = 0; i < count; i++) {
+                if (i > 0) pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, 0, currentW, currentH);
+            }
+        }
+        pdf.save("BlankCanvas.pdf");
+    } catch (e) {
+        alert("PDF Error: " + e.message);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+function exportPNG() {
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    canvas.width = currentW * 10; canvas.height = currentH * 10;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "white";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "BlankCanvas.png";
+        link.click();
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+}
+
+function exportSVG() {
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([svgData], {type:'image/svg+xml;charset=utf-8'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "BlankCanvas.svg";
+    link.click();
+}
+
+updatePageLayout();
+</script>
+
+</body>
+</html>
