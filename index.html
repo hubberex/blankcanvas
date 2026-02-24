@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlankCanvas | Designer Paper Pro</title>
+<title>BlankCanvas | Free Templates Download In 10 seconds</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>if (window.jspdf) { window.jsPDF = window.jspdf.jsPDF; }</script>
@@ -78,8 +78,14 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
 <div id="helpModal" class="modal-overlay" onclick="toggleHelp(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="toggleHelp(false)">✕</button>
-        <h2 style="margin-top:0; color:var(--olive-deep)">Designer Presets</h2>
-        <p style="font-size:13px">Your custom standards (e.g., 20.3mm for Habit) are saved here. Use <b>Save as Standard</b> to update presets at any time.</p>
+        <h2 style="margin-top:0; color:var(--olive-deep)">Quick Start Guide</h2>
+        <ol style="font-size:13px; line-height:1.6; padding-left:18px; color:#333; margin-bottom:0;">
+            <li><b>Choose a Template:</b> Select from trackers, grids, logs, and more using the dropdown.</li>
+            <li><b>Customize the Fit:</b> Use the sliders to easily tweak the spacing and margins to your exact needs.</li>
+            <li><b>Save Your Layout:</b> Click <b>Save as Standard</b> to lock in your custom layout for next time.</li>
+            <li><b>Download Instantly:</b> Export your design as a ready-to-print PDF or a high-res PNG image.</li>
+            <li><b>100% Free & Editable:</b> Download the <b>.SVG</b> file to infinitely scale or tweak the design in your favorite vector app. Everything is completely free!</li>
+        </ol>
     </div>
 </div>
 
@@ -90,6 +96,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
                 <label>Template</label>
                 <select id="paperType" onchange="generatePaper()">
                     <option value="habit" selected>Habit Tracker</option>
+                    <option value="daily">Daily Journal</option>
                     <option value="calendar">Monthly Calendar</option>
                     <option value="workout">Workout Log</option>
                     <option value="checklist">Checklist</option>
@@ -127,7 +134,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
         </div>
         
         <div class="slider-box"><label id="zoom-label">Preview Zoom: 85%</label><input type="range" id="zoom" min="30" max="250" value="85" oninput="updateZoom()"></div>
-        <div class="slider-box"><label id="spacing-label">Spacing: 25.0mm</label><input type="range" id="spacing" min="10" max="150" value="100" oninput="updateUI('spacing')"></div>
+        <div class="slider-box"><label id="spacing-label">Spacing: 30.5mm</label><input type="range" id="spacing" min="10" max="150" value="122" oninput="updateUI('spacing')"></div>
         <div class="slider-box"><label id="margin-label">Margin: 20.0mm</label><input type="range" id="margin" min="0" max="200" value="80" oninput="updateUI('margin')"></div>
 
         <div class="action-row">
@@ -151,7 +158,8 @@ const container = document.getElementById('container');
 let currentW = 210, currentH = 297, lastT = "";
 
 let templatePresets = {
-    habit: { spacing: 110, margin: 60, orientation: 'portrait' }, // Updated spacing for minimalist look
+    habit: { spacing: 122, margin: 60, orientation: 'portrait' },     // 30.5mm standard
+    daily: { spacing: 25.2, margin: 60, orientation: 'portrait' },    // New Daily Journal
     workout: { spacing: 25.2, margin: 60, orientation: 'portrait' },  
     checklist: { spacing: 23.2, margin: 60, orientation: 'portrait' },
     weekly: { spacing: 26, margin: 60, orientation: 'portrait' },     
@@ -171,7 +179,7 @@ function toggleHelp(show) { document.getElementById('helpModal').style.display =
 
 function applyStandardPreset() {
     const t = document.getElementById('paperType').value;
-    const p = templatePresets[t] || { spacing: 100, margin: 60, orientation: 'portrait' };
+    const p = templatePresets[t] || { spacing: 122, margin: 60, orientation: 'portrait' };
     document.getElementById('spacing').value = p.spacing;
     document.getElementById('margin').value = p.margin;
     document.getElementById('orientation').value = p.orientation;
@@ -235,6 +243,84 @@ const templates = {
         }
         return out;
     },
+    daily: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15;
+        const leftW = (w - side*2) * 0.55;
+        const rightX = side + leftW + 10;
+        const rightW = (w - side*2) * 0.45 - 10;
+
+        // LEFT COLUMN (Header + Lines)
+        out += `<text x="${side}" y="20" font-family="Helvetica" font-size="6" font-weight="900" fill="${col}" letter-spacing="2">DAILY JOURNAL</text>`;
+        for(let y = 35; y < h - side; y += sp) {
+            out += `<line x1="${side}" y1="${y}" x2="${side + leftW}" y2="${y}" stroke="${col}" stroke-width="0.15" opacity="0.5"/>`;
+        }
+
+        // RIGHT COLUMN
+        let ry = 15;
+        const addHeader = (title) => {
+            out += `<text x="${rightX}" y="${ry}" font-family="Helvetica" font-size="2.2" font-weight="900" fill="${col}" letter-spacing="1">${title}</text>`;
+            ry += 2;
+            out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.3" opacity="0.8"/>`;
+            ry += 4;
+        };
+
+        // DATE
+        addHeader('DATE');
+        ry += 5;
+
+        // MOOD
+        addHeader('MOOD');
+        for(let i=0; i<5; i++) {
+            let cx = rightX + 4 + i*(rightW/5);
+            let cy = ry + 2;
+            out += `<circle cx="${cx}" cy="${cy}" r="2.5" fill="none" stroke="${col}" stroke-width="0.2" opacity="0.6"/>`;
+            out += `<path d="M${cx-0.8} ${cy-0.5} v0.5 M${cx+0.8} ${cy-0.5} v0.5" stroke="${col}" stroke-width="0.2" stroke-linecap="round" opacity="0.6"/>`;
+            let mouth = '';
+            if(i===0) mouth = `M${cx-1} ${cy+1.2} Q${cx} ${cy+0.2} ${cx+1} ${cy+1.2}`;
+            else if(i===1) mouth = `M${cx-0.8} ${cy+1} Q${cx} ${cy+0.6} ${cx+0.8} ${cy+1}`;
+            else if(i===2) mouth = `M${cx-0.8} ${cy+1} h1.6`;
+            else if(i===3) mouth = `M${cx-0.8} ${cy+0.8} Q${cx} ${cy+1.5} ${cx+0.8} ${cy+0.8}`;
+            else mouth = `M${cx-1} ${cy+0.5} Q${cx} ${cy+1.8} ${cx+1} ${cy+0.5}`;
+            out += `<path d="${mouth}" fill="none" stroke="${col}" stroke-width="0.2" stroke-linecap="round" opacity="0.6"/>`;
+        }
+        ry += 9;
+
+        // WATER INTAKE
+        addHeader('WATER INTAKE');
+        for(let i=0; i<8; i++) {
+            let dx = rightX + 2.5 + i*(rightW/8.5);
+            let dy = ry + 1;
+            out += `<path d="M${dx} ${dy} C${dx+1.2} ${dy+1.5}, ${dx+1.2} ${dy+3.5}, ${dx} ${dy+3.5} C${dx-1.2} ${dy+3.5}, ${dx-1.2} ${dy+1.5}, ${dx} ${dy} Z" fill="none" stroke="${col}" stroke-width="0.2" opacity="0.6"/>`;
+        }
+        ry += 9;
+
+        // SLEEP
+        addHeader('SLEEP');
+        out += `<text x="${rightX + rightW}" y="${ry+3.5}" font-family="Helvetica" font-size="1.8" text-anchor="end" fill="${col}" opacity="0.6">Hours</text>`;
+        out += `<line x1="${rightX}" y1="${ry+4}" x2="${rightX + rightW - 12}" y2="${ry+4}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+        ry += 10;
+
+        // AFFIRMATION
+        addHeader('AFFIRMATION');
+        ry += 15;
+
+        // GRATEFUL
+        addHeader('I FEEL GRATEFUL FOR');
+        for(let i=0; i<3; i++) {
+            ry += sp;
+            out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+        }
+        ry += 8;
+
+        // NOTES
+        addHeader('NOTES');
+        while(ry + sp < h - side) {
+            ry += sp;
+            out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+        }
+
+        return out;
+    },
     calendar: (w, h, sp, ma, col) => {
         let out = ''; const side = ma || 15, topM = 35, usableW = w-side*2, usableH = h-topM-15, cellW = usableW/7, cellH = usableH/5;
         const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
@@ -250,7 +336,13 @@ const templates = {
         let out = ''; const side = ma || 15, usableW = w-side*2, logH = h/2;
         const drawLog = (yOff) => {
             let log = `<g transform="translate(${side}, ${yOff+12})" fill="${col}" font-family="Helvetica"><text x="0" y="0" font-size="5.5" font-weight="900" letter-spacing="2.5">WORKOUT LOG</text><line x1="0" y1="3" x2="${usableW}" y2="3" stroke="${col}" stroke-width="0.4" opacity="0.2"/>`;
-            const fY = 15; log += `<text x="0" y="${fY}" font-size="2.8" font-weight="bold" opacity="0.6">DATE</text><line x1="12" y1="${fY+0.5}" x2="${usableW*0.35}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+            
+            // Re-added Muscle Group and Duration logically inline with Date
+            const fY = 15; 
+            log += `<text x="0" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">DATE :</text><line x1="12" y1="${fY+0.5}" x2="${usableW*0.25}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+            log += `<text x="${usableW*0.28}" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">MUSCLE GROUP :</text><line x1="${usableW*0.28+28}" y1="${fY+0.5}" x2="${usableW*0.68}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+            log += `<text x="${usableW*0.72}" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">DURATION :</text><line x1="${usableW*0.72+20}" y1="${fY+0.5}" x2="${usableW}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+            
             const rY = fY+16, c1W = usableW*0.35, sW = (usableW-c1W)/5;
             log += `<rect x="0" y="${rY}" width="${usableW}" height="${sp}" fill="${col}" opacity="0.04"/><text x="${c1W/2}" y="${rY+sp/2+0.8}" font-size="2.2" font-weight="bold" text-anchor="middle">EXERCISE</text>`;
             for(let i=1; i<=5; i++) log += `<text x="${c1W+(i-1)*sW+sW/2}" y="${rY+sp/2+0.8}" font-size="2" font-weight="bold" text-anchor="middle">SET ${i}</text>`;
