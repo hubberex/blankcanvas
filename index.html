@@ -30,65 +30,92 @@ body {
     flex-direction: column;
 }
 
+/* Header & Help Button */
 .brand-header {
     background: #FFF;
-    padding: 14px;
-    text-align: center;
-    font-weight: 700;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+}
+
+.brand-title {
+    font-weight: 800;
     font-size: 18px;
-    border-bottom: 0.5px solid rgba(0,0,0,0.1);
     color: var(--olive-deep);
+    letter-spacing: -0.5px;
 }
 
-.app-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.top-bar {
-    background: var(--glass-bg);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    border-bottom: 0.5px solid rgba(0,0,0,0.1);
-}
-
-.compact-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-/* Three columns for the second row to fit smaller items */
-.compact-row.tri {
-    grid-template-columns: 1fr 1fr 1fr;
-}
-
-.control-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-label {
-    font-size: 10px;
-    color: var(--label-sec);
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-select, input[type="number"], input[type="color"] {
-    background: rgba(120,120,128,0.08);
+.help-btn {
+    background: var(--system-bg);
     border: none;
-    border-radius: 10px;
-    padding: 8px;
-    font-size: 13px;
-    width: 100%;
-    height: 38px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--olive-light);
+    transition: transform 0.2s;
 }
 
+.help-btn:active { transform: scale(0.9); }
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--system-bg);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.modal-content h2 { margin-top: 0; color: var(--olive-deep); font-size: 22px; }
+.help-step { display: flex; gap: 15px; margin-bottom: 20px; }
+.step-num { 
+    background: var(--olive-light); color: white; 
+    min-width: 24px; height: 24px; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+}
+.step-text b { display: block; font-size: 14px; margin-bottom: 2px; }
+.step-text p { margin: 0; font-size: 13px; color: var(--label-sec); line-height: 1.4; }
+
+/* Existing App Layout */
+.app-wrapper { flex: 1; display: flex; flex-direction: column; }
+.top-bar { background: var(--glass-bg); padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+.compact-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.compact-row.tri { grid-template-columns: 1fr 1fr 1fr; }
+.control-item { display: flex; flex-direction: column; gap: 4px; }
+label { font-size: 10px; color: var(--label-sec); font-weight: 700; text-transform: uppercase; }
+select, input[type="number"], input[type="color"] { background: rgba(120,120,128,0.08); border: none; border-radius: 10px; padding: 8px; font-size: 13px; width: 100%; height: 38px; }
 input[type="color"] { padding: 4px; cursor: pointer; }
 
 .switch { position: relative; width: 44px; height: 24px; }
@@ -122,32 +149,55 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
     .top-bar { width: 340px; height: calc(100vh - 58px); overflow-y: auto; border-right: 0.5px solid rgba(0,0,0,0.1); }
     .viewport { padding: 40px; }
 }
-
-@media print {
-    body * { visibility: hidden; }
-    #paper-preview, #paper-preview * { visibility: visible; }
-    #paper-preview { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
-}
 </style>
 </head>
 
 <body>
-<div class="brand-header">BlankCanvas</div>
+<div class="brand-header">
+    <div class="brand-title">BlankCanvas</div>
+    <button class="help-btn" onclick="toggleHelp(true)">i</button>
+</div>
+
+<div id="helpModal" class="modal-overlay" onclick="toggleHelp(false)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="toggleHelp(false)">Close</button>
+        <h2>Quick Guide</h2>
+        <div class="help-step">
+            <div class="step-num">1</div>
+            <div class="step-text"><b>Select Template</b><p>Choose between Planner, Checklist, Grid, or Creative layouts.</p></div>
+        </div>
+        <div class="help-step">
+            <div class="step-num">2</div>
+            <div class="step-text"><b>Custom Spacing</b><p>Use the Spacing slider to adjust line height or cell size (mm).</p></div>
+        </div>
+        <div class="help-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><b>Set Margins</b><p>Move the margin slider to leave room for hole punches or notes.</p></div>
+        </div>
+        <div class="help-step">
+            <div class="step-num">4</div>
+            <div class="step-text"><b>Pick Your Colors</b><p>Change paper tint (Cream, Gray) and line color for a premium feel.</p></div>
+        </div>
+        <div class="help-step">
+            <div class="step-num">5</div>
+            <div class="step-text"><b>Export High-Res</b><p>Save as PDF for multi-page printing or PNG for digital use.</p></div>
+        </div>
+    </div>
+</div>
+
 <div class="app-wrapper">
     <div class="top-bar">
         <div class="compact-row">
             <div class="control-item">
                 <label>Template</label>
                 <select id="paperType" onchange="generatePaper()">
-                    <option value="habit" selected>Habit Tracker</option>
+                    <option value="checklist" selected>Checklist</option>
+                    <option value="habit">Habit Tracker</option>
                     <option value="calendar">Monthly Calendar</option>
                     <option value="workout">Workout Log</option>
-                    <option value="checklist">Checklist</option>
-                    <option value="cornell">Cornell</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="lined">Lined</option>
-                    <option value="grid">Grid</option>
-                    <option value="graph">Graph Paper</option>
+                    <option value="cornell">Cornell Notes</option>
+                    <option value="weekly">Weekly Planner</option>
+                    <option value="lined">Lined Paper</option>
                     <option value="dotgrid">Dot Grid</option>
                     <option value="music">Music Staff</option>
                 </select>
@@ -238,21 +288,33 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
 const svg = document.getElementById('paper-preview');
 const container = document.getElementById('container');
 let currentW = 210, currentH = 297;
-const titleSpace = 25;
+
+function toggleHelp(show) {
+    document.getElementById('helpModal').style.display = show ? 'flex' : 'none';
+}
 
 const templates = {
-    getGridBounds: (w, h, spacing, margin) => {
-        const sideMargin = margin || 10;
-        const bottomMargin = 15;
-        const usableW = w - (sideMargin * 2);
-        const cols = Math.floor(usableW / spacing);
-        const gridW = cols * spacing;
-        const startX = (w - gridW) / 2;
-        const usableH = h - titleSpace - bottomMargin;
-        const rows = Math.floor(usableH / spacing);
-        const gridH = rows * spacing;
-        const startY = titleSpace + ((usableH - gridH) / 2);
-        return { startX, startY, gridW, gridH, cols, rows };
+    checklist: (w, h, spacing, margin, color) => {
+        let out = '';
+        const side = margin || 15;
+        const sections = ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"];
+        const sectionH = (h - 20) / 4; 
+        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
+        sections.forEach((title, idx) => {
+            const startY = 15 + (idx * sectionH);
+            out += `<text x="${side}" y="${startY}" font-size="4.5" font-weight="900" letter-spacing="2" opacity="0.9">${title}</text>`;
+            out += `<line x1="${side}" y1="${startY+3}" x2="${w-side}" y2="${startY+3}" stroke="${color}" stroke-width="0.4" opacity="0.2"/>`;
+            const itemsY = startY + 12;
+            const numRows = Math.floor((sectionH - 18) / spacing);
+            for (let i = 0; i < numRows; i++) {
+                const y = itemsY + (i * spacing);
+                out += `<rect x="${side}" y="${y-2.5}" width="3" height="3" fill="none" stroke="${color}" stroke-width="0.2" opacity="0.6"/>`;
+                out += `<line x1="${side+5}" y1="${y}" x2="${side+(w-side*2)/2-5}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
+                out += `<rect x="${side+(w-side*2)/2+5}" y="${y-2.5}" width="3" height="3" fill="none" stroke="${color}" stroke-width="0.2" opacity="0.6"/>`;
+                out += `<line x1="${side+(w-side*2)/2+10}" y1="${y}" x2="${w-side}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
+            }
+        });
+        out += `</g>`; return out;
     },
 
     habit: (w, h, spacing, margin, color) => {
@@ -266,19 +328,14 @@ const templates = {
         out += `<text x="${w/2 + accentW/2}" y="15" font-size="8" font-weight="900" letter-spacing="4" opacity="0.9">HABIT TRACKER</text>`;
         out += `<text x="${w/2 + accentW/2}" y="25" font-size="3" font-weight="bold" opacity="0.5" letter-spacing="1.5">MONTH OF . . . . . . . . . . . . . . . . . . . . . . . . . </text>`;
         out += `</g>`;
-
         const drawHabitBlock = (startY) => {
             let block = `<g transform="translate(${contentX}, ${startY})" fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
             block += `<text x="0" y="0" font-size="3" font-weight="900" letter-spacing="0.5">HABIT :</text>`;
             block += `<line x1="0" y1="14" x2="${usableW * 0.4}" y2="14" stroke="${color}" stroke-width="0.1" opacity="0.4"/>`;
-            const circleR = 2.8;
-            const circleGap = 7.5;
-            const startCircleX = usableW * 0.45;
+            const circleR = 2.8, circleGap = 7.5, startCircleX = usableW * 0.45;
             for(let i=1; i<=31; i++) {
-                const row = Math.floor((i-1) / 11);
-                const col = (i-1) % 11;
-                const cx = startCircleX + (col * circleGap);
-                const cy = (row * circleGap) - 2;
+                const cx = startCircleX + (((i-1)%11) * circleGap);
+                const cy = (Math.floor((i-1)/11) * circleGap) - 2;
                 block += `<circle cx="${cx}" cy="${cy}" r="${circleR}" fill="none" stroke="${color}" stroke-width="0.15" opacity="0.8"/>`;
                 block += `<text x="${cx}" y="${cy + 1}" font-size="1.8" text-anchor="middle" font-weight="bold" opacity="0.6">${i}</text>`;
             }
@@ -287,126 +344,106 @@ const templates = {
             block += `<text x="0" y="${footerY + 5}" font-size="2.2" font-weight="900" opacity="0.5">GOAL :</text>`;
             block += `<text x="${usableW * 0.55}" y="${footerY + 5}" font-size="2.2" font-weight="900" opacity="0.5">REWARD :</text>`;
             block += `<line x1="0" y1="${footerY + 8}" x2="${usableW}" y2="${footerY + 8}" stroke="${color}" stroke-width="0.5" opacity="0.2"/>`;
-            block += `</g>`;
-            return block;
+            block += `</g>`; return block;
         };
-        let currentY = 40;
-        const blockStep = spacing * 1.8;
-        while (currentY + 35 < h) {
-            out += drawHabitBlock(currentY);
-            currentY += blockStep;
-        }
+        let currentY = 40; const blockStep = spacing * 1.8;
+        while (currentY + 35 < h) { out += drawHabitBlock(currentY); currentY += blockStep; }
         return out;
     },
 
     workout: (w, h, spacing, margin, color) => {
         let out = '';
-        const side = margin || 15;
-        const usableW = w - (side * 2);
-        const rowH = spacing; 
-        const logAreaH = h / 2;
+        const side = margin || 15, usableW = w - (side * 2), rowH = spacing, logAreaH = h / 2;
         const drawLog = (yOffset) => {
             let log = `<g transform="translate(${side}, ${yOffset + 12})" fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
             log += `<text x="0" y="0" font-size="5.5" font-weight="900" letter-spacing="2.5" opacity="0.9">WORKOUT LOG</text>`;
             log += `<line x1="0" y1="3" x2="${usableW}" y2="3" stroke="${color}" stroke-width="0.4" opacity="0.2"/>`;
             const fieldY = 15;
-            const labelSize = 2.8;
-            log += `<text x="0" y="${fieldY}" font-size="${labelSize}" font-weight="bold" opacity="0.6">DATE</text><line x1="12" y1="${fieldY+0.5}" x2="${usableW*0.35}" y2="${fieldY+0.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
-            log += `<text x="${usableW*0.4}" y="${fieldY}" font-size="${labelSize}" font-weight="bold" opacity="0.6">DURATION</text><line x1="${usableW*0.6}" y1="${fieldY+0.5}" x2="${usableW}" y2="${fieldY+0.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
-            log += `<text x="0" y="${fieldY+8}" font-size="${labelSize}" font-weight="bold" opacity="0.6">MUSCLE GROUP</text><line x1="28" y1="${fieldY+8.5}" x2="${usableW}" y2="${fieldY+8.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
-            const resY = fieldY + 16;
-            log += `<text x="0" y="${resY-3}" font-size="3" font-weight="900" letter-spacing="0.5">EXERCISES</text>`;
-            const tableW = usableW;
-            const col1W = tableW * 0.35;
-            const setW = (tableW - col1W) / 5;
+            log += `<text x="0" y="${fieldY}" font-size="2.8" font-weight="bold" opacity="0.6">DATE</text><line x1="12" y1="${fieldY+0.5}" x2="${usableW*0.35}" y2="${fieldY+0.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
+            log += `<text x="${usableW*0.4}" y="${fieldY}" font-size="2.8" font-weight="bold" opacity="0.6">DURATION</text><line x1="${usableW*0.6}" y1="${fieldY+0.5}" x2="${usableW}" y2="${fieldY+0.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
+            log += `<text x="0" y="${fieldY+8}" font-size="2.8" font-weight="bold" opacity="0.6">MUSCLE GROUP</text><line x1="28" y1="${fieldY+8.5}" x2="${usableW}" y2="${fieldY+8.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
+            const resY = fieldY + 16, tableW = usableW, col1W = tableW * 0.35, setW = (tableW - col1W) / 5;
             log += `<rect x="0" y="${resY}" width="${tableW}" height="${rowH}" fill="${color}" opacity="0.04"/>`;
-            const headY = resY + (rowH/2) + 0.8;
-            log += `<text x="${col1W/2}" y="${headY}" font-size="2.2" font-weight="bold" text-anchor="middle" letter-spacing="0.5">EXERCISE</text>`;
-            for(let i=1; i<=5; i++) {
-                const x = col1W + (i-1)*setW;
-                log += `<text x="${x + setW/2}" y="${headY}" font-size="2" font-weight="bold" text-anchor="middle" opacity="0.8">SET ${i}</text>`;
-            }
-            const availableTableH = logAreaH - resY - 20;
-            const numRows = Math.floor(availableTableH / rowH);
+            log += `<text x="${col1W/2}" y="${resY + (rowH/2) + 0.8}" font-size="2.2" font-weight="bold" text-anchor="middle" letter-spacing="0.5">EXERCISE</text>`;
+            for(let i=1; i<=5; i++) log += `<text x="${col1W+(i-1)*setW+setW/2}" y="${resY+(rowH/2)+0.8}" font-size="2" font-weight="bold" text-anchor="middle" opacity="0.8">SET ${i}</text>`;
+            const numRows = Math.floor((logAreaH - resY - 20) / rowH);
             for(let i=0; i <= numRows; i++) {
                 const y = resY + (i * rowH);
-                const isEdge = (i === 0 || i === numRows);
-                log += `<line x1="0" y1="${y}" x2="${tableW}" y2="${y}" stroke="${color}" stroke-width="${isEdge ? 0.25 : 0.1}" opacity="${isEdge ? 0.8 : 0.2}"/>`;
+                log += `<line x1="0" y1="${y}" x2="${tableW}" y2="${y}" stroke="${color}" stroke-width="${(i===0||i===numRows)?0.25:0.1}" opacity="${(i===0||i===numRows)?0.8:0.2}"/>`;
             }
-            const totalTableH = numRows * rowH;
-            log += `<line x1="0" y1="${resY}" x2="0" y2="${resY + totalTableH}" stroke="${color}" stroke-width="0.25" opacity="0.8"/>`;
-            log += `<line x1="${col1W}" y1="${resY}" x2="${col1W}" y2="${resY + totalTableH}" stroke="${color}" stroke-width="0.15" opacity="0.3"/>`;
-            for(let i=1; i<=5; i++) {
-                const x = col1W + i*setW;
-                log += `<line x1="${x}" y1="${resY}" x2="${x}" y2="${resY + totalTableH}" stroke="${color}" stroke-width="${i===5 ? 0.25 : 0.15}" opacity="${i===5 ? 0.8 : 0.3}"/>`;
-            }
-            log += `</g>`;
-            return log;
+            log += `<line x1="0" y1="${resY}" x2="0" y2="${resY+numRows*rowH}" stroke="${color}" stroke-width="0.25" opacity="0.8"/>`;
+            log += `<line x1="${col1W}" y1="${resY}" x2="${col1W}" y2="${resY+numRows*rowH}" stroke="${color}" stroke-width="0.15" opacity="0.3"/>`;
+            for(let i=1; i<=5; i++) log += `<line x1="${col1W+i*setW}" y1="${resY}" x2="${col1W+i*setW}" y2="${resY+numRows*rowH}" stroke="${color}" stroke-width="${i===5?0.25:0.15}" opacity="${i===5?0.8:0.3}"/>`;
+            log += `</g>`; return log;
         };
-        out += drawLog(0);
-        out += `<line x1="${side + usableW*0.4}" y1="${h/2}" x2="${side + usableW*0.6}" y2="${h/2}" stroke="${color}" stroke-width="0.15" opacity="0.2"/>`;
-        out += drawLog(h/2);
-        return out;
+        out += drawLog(0); out += `<line x1="${side+usableW*0.4}" y1="${h/2}" x2="${side+usableW*0.6}" y2="${h/2}" stroke="${color}" stroke-width="0.15" opacity="0.2"/>`;
+        out += drawLog(h/2); return out;
     },
 
     calendar: (w, h, spacing, margin, color) => {
         let out = '';
-        const side = margin || 15;
-        const topM = 35; 
-        const bottomM = 15;
-        const usableW = w - (side * 2);
-        const usableH = h - topM - bottomM;
-        const cols = 7;
-        const rows = 5; 
-        const cellW = usableW / cols;
-        const cellH = usableH / rows;
+        const side = margin || 15, topM = 35, usableW = w - (side * 2), usableH = h - topM - 15;
+        const cols = 7, rows = 5, cellW = usableW / cols, cellH = usableH / rows;
         const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
         out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-        const monthX = side;
-        const yearX = w - side;
-        out += `<text x="${monthX}" y="18" font-size="9" font-weight="900" letter-spacing="3" opacity="0.9">MONTH</text>`;
-        out += `<text x="${yearX}" y="18" font-size="9" font-weight="900" letter-spacing="3" text-anchor="end" opacity="0.9">YEAR</text>`;
-        const monthLineWidth = 39; 
-        const yearLineWidth = 31;
-        out += `<line x1="${monthX}" y1="21" x2="${monthX + monthLineWidth}" y2="21" stroke="${color}" stroke-width="0.6" opacity="0.9"/>`;
-        out += `<line x1="${yearX - yearLineWidth}" y1="21" x2="${yearX}" y2="21" stroke="${color}" stroke-width="0.6" opacity="0.9"/>`;
-        out += `<rect x="${side}" y="${topM - 12}" width="${usableW}" height="8" fill="${color}" opacity="0.03"/>`;
-        days.forEach((day, i) => {
-            const x = side + (i * cellW) + (cellW / 2);
-            out += `<text x="${x}" y="${topM - 6.5}" font-size="2.8" font-weight="900" text-anchor="middle" letter-spacing="0.8" opacity="0.6">${day}</text>`;
-        });
+        out += `<text x="${side}" y="18" font-size="9" font-weight="900" letter-spacing="3" opacity="0.9">MONTH</text>`;
+        out += `<text x="${w-side}" y="18" font-size="9" font-weight="900" letter-spacing="3" text-anchor="end" opacity="0.9">YEAR</text>`;
+        out += `<line x1="${side}" y1="21" x2="${side+39}" y2="21" stroke="${color}" stroke-width="0.6" opacity="0.9"/>`;
+        out += `<line x1="${w-side-31}" y1="21" x2="${w-side}" y2="21" stroke="${color}" stroke-width="0.6" opacity="0.9"/>`;
+        out += `<rect x="${side}" y="${topM-12}" width="${usableW}" height="8" fill="${color}" opacity="0.03"/>`;
+        days.forEach((day, i) => out += `<text x="${side+(i*cellW)+(cellW/2)}" y="${topM-6.5}" font-size="2.8" font-weight="900" text-anchor="middle" letter-spacing="0.8" opacity="0.6">${day}</text>`);
         out += `<g fill="none" stroke="${color}">`;
-        for(let r=0; r <= rows; r++) {
-            const y = topM + (r * cellH);
-            const isEdge = (r === 0 || r === rows);
-            out += `<line x1="${side}" y1="${y}" x2="${side + usableW}" y2="${y}" stroke-width="${isEdge ? 0.3 : 0.1}" opacity="${isEdge ? 0.8 : 0.2}"/>`;
-        }
-        for(let c=0; c <= cols; c++) {
-            const x = side + (c * cellW);
-            const isEdge = (c === 0 || c === cols);
-            out += `<line x1="${x}" y1="${topM}" x2="${x}" y2="${topM + usableH}" stroke-width="${isEdge ? 0.3 : 0.1}" opacity="${isEdge ? 0.8 : 0.2}"/>`;
-        }
-        for(let i=0; i<35; i++) {
-            const r = Math.floor(i / 7);
-            const c = i % 7;
-            const x = side + (c * cellW);
-            const y = topM + (r * cellH);
-            out += `<path d="M${x+1.5} ${y+5.5} L${x+1.5} ${y+1.5} L${x+5.5} ${y+1.5}" stroke-width="0.1" opacity="0.15"/>`;
-        }
-        out += `</g></g>`;
+        for(let r=0; r<=rows; r++) out += `<line x1="${side}" y1="${topM+(r*cellH)}" x2="${side+usableW}" y2="${topM+(r*cellH)}" stroke-width="${(r===0||r===rows)?0.3:0.1}" opacity="${(r===0||r===rows)?0.8:0.2}"/>`;
+        for(let c=0; c<=cols; c++) out += `<line x1="${side+(c*cellW)}" y1="${topM}" x2="${side+(c*cellW)}" y2="${topM+usableH}" stroke-width="${(c===0||c===cols)?0.3:0.1}" opacity="${(c===0||c===cols)?0.8:0.2}"/>`;
+        for(let i=0; i<35; i++) out += `<path d="M${side+((i%7)*cellW)+1.5} ${topM+(Math.floor(i/7)*cellH)+5.5} L${side+((i%7)*cellW)+1.5} ${topM+(Math.floor(i/7)*cellH)+1.5} L${side+((i%7)*cellW)+5.5} ${topM+(Math.floor(i/7)*cellH)+1.5}" stroke-width="0.1" opacity="0.15"/>`;
+        out += `</g></g>`; return out;
+    },
+
+    cornell: (w, h, spacing, margin, color) => {
+        let out = ''; const side = margin || 15, cuesW = 50, summaryH = 45, topH = 20, usableW = w - (side * 2);
+        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
+        out += `<text x="${side}" y="15" font-size="6" font-weight="900" letter-spacing="2">TOPIC</text>`;
+        out += `<line x1="${side+25}" y1="16" x2="${w-side}" y2="16" stroke="${color}" stroke-width="0.2" opacity="0.3"/>`;
+        out += `<rect x="${side}" y="${topH}" width="${usableW}" height="${h-topH-summaryH-side}" fill="none" stroke="${color}" stroke-width="0.3" opacity="0.6"/>`;
+        out += `<line x1="${side+cuesW}" y1="${topH}" x2="${side+cuesW}" y2="${h-summaryH-side}" stroke="${color}" stroke-width="0.3" opacity="0.6"/>`;
+        for (let y = topH + spacing; y < h-summaryH-side; y += spacing) out += `<line x1="${side+cuesW}" y1="${y}" x2="${w-side}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
+        out += `<rect x="${side}" y="${h-summaryH-side+5}" width="${usableW}" height="${summaryH-5}" fill="${color}" opacity="0.03"/>`;
+        out += `<text x="${side+2}" y="${h-summaryH-side+10}" font-size="3" font-weight="900">SUMMARY</text>`;
+        out += `</g>`; return out;
+    },
+
+    weekly: (w, h, spacing, margin, color) => {
+        let out = ''; const side = margin || 15, days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"], dayH = (h - 30) / 7;
+        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
+        days.forEach((day, i) => {
+            let y = 20 + (i * dayH);
+            out += `<text x="${side}" y="${y}" font-size="4" font-weight="900" letter-spacing="1">${day}</text>`;
+            out += `<line x1="${side}" y1="${y+2}" x2="${w-side}" y2="${y+2}" stroke="${color}" stroke-width="0.3" opacity="0.6"/>`;
+            for (let sY = y + spacing; sY < y + dayH - 5; sY += spacing) out += `<line x1="${side+10}" y1="${sY}" x2="${w-side}" y2="${sY}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
+        });
+        out += `</g>`; return out;
+    },
+
+    lined: (w, h, spacing, margin, color) => {
+        let out = ''; const side = margin || 15;
+        if (side > 0) out += `<line x1="${side}" y1="0" x2="${side}" y2="${h}" stroke="${color}" stroke-width="0.4" opacity="0.3"/>`;
+        for (let y = 25; y < h - 15; y += spacing) out += `<line x1="${side}" y1="${y}" x2="${w-10}" y2="${y}" stroke="${color}" stroke-width="0.15" opacity="0.5"/>`;
         return out;
     },
 
-    grid: (w, h, spacing, margin, color) => {
-        const b = templates.getGridBounds(w, h, spacing, margin);
-        let out = '';
-        for (let i = 0; i <= b.cols; i++) {
-            const x = b.startX + (i * spacing);
-            out += `<line x1="${x}" y1="${b.startY}" x2="${x}" y2="${b.startY + b.gridH}" stroke="${color}" stroke-width="0.1" opacity="0.4"/>`;
-        }
-        for (let i = 0; i <= b.rows; i++) {
-            const y = b.startY + (i * spacing);
-            out += `<line x1="${b.startX}" y1="${y}" x2="${b.startX + b.gridW}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.4"/>`;
+    dotgrid: (w, h, spacing, margin, color) => {
+        let out = `<g fill="${color}" opacity="0.4">`; const side = margin || 15;
+        for (let x = side; x <= w - side; x += spacing) for (let y = 25; y <= h - 15; y += spacing) out += `<circle cx="${x}" cy="${y}" r="0.4"/>`;
+        out += `</g>`; return out;
+    },
+
+    music: (w, h, spacing, margin, color) => {
+        let out = ''; const side = margin || 15, lineGap = 2.5, staffGap = spacing * 1.5; let y = 25;
+        while (y + (4 * lineGap) < h - 15) {
+            for (let i = 0; i < 5; i++) out += `<line x1="${side}" y1="${y+(i*lineGap)}" x2="${w-side}" y2="${y+(i*lineGap)}" stroke="${color}" stroke-width="0.2" opacity="0.8"/>`;
+            out += `<line x1="${side}" y1="${y}" x2="${side}" y2="${y+4*lineGap}" stroke="${color}" stroke-width="0.5"/>`;
+            out += `<line x1="${w-side}" y1="${y}" x2="${w-side}" y2="${y+4*lineGap}" stroke="${color}" stroke-width="0.5"/>`;
+            y += (4 * lineGap) + staffGap;
         }
         return out;
     }
@@ -423,12 +460,8 @@ function updatePageLayout() {
     const orient = document.getElementById('orientation').value;
     let w = (size === 'a4') ? 210 : 215.9;
     let h = (size === 'a4') ? 297 : 279.4;
-    
-    // Core fix: Swap Width and Height if landscape is selected
     if (orient === 'landscape') [w, h] = [h, w];
-    
-    currentW = w;
-    currentH = h;
+    currentW = w; currentH = h;
     svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
     container.style.aspectRatio = `${w} / ${h}`;
     generatePaper();
@@ -437,10 +470,7 @@ function updatePageLayout() {
 function updateUI(id) {
     const val = document.getElementById(id).value;
     if (id === 'spacing') document.getElementById('spacing-label').innerText = `Spacing: ${(val/4).toFixed(1)}mm`;
-    if (id === 'margin') {
-        document.getElementById('margin-label').innerText = `Margin: ${(val/4).toFixed(1)}mm`;
-        document.querySelectorAll('.btn-segment').forEach(b => b.classList.remove('active'));
-    }
+    if (id === 'margin') document.getElementById('margin-label').innerText = `Margin: ${(val/4).toFixed(1)}mm`;
     generatePaper();
 }
 
@@ -458,71 +488,37 @@ function generatePaper() {
     const margin = parseInt(document.getElementById('margin').value)/4;
     const color = document.getElementById('lineColor').value;
     const bgColor = document.getElementById('paperColor').value;
-    const showHolePunches = document.getElementById('holePunch').checked;
-
+    const holes = document.getElementById('holePunch').checked;
     let content = `<rect width="100%" height="100%" fill="${bgColor}"/>`;
-
-    if (showHolePunches) {
-        const holesY = [currentH * 0.15, currentH * 0.5, currentH * 0.85];
-        holesY.forEach(y => {
-            content += `<circle cx="12" cy="${y}" r="3.5" fill="none" stroke="${color}" opacity="0.2" stroke-width="0.3"/>`;
-        });
-    }
-
-    if (templates[type]) {
-        content += templates[type](currentW, currentH, spacing, margin, color);
-    }
+    if (holes) [0.15, 0.5, 0.85].forEach(yP => content += `<circle cx="12" cy="${currentH*yP}" r="3.5" fill="none" stroke="${color}" opacity="0.2" stroke-width="0.3"/>`);
+    if (templates[type]) content += templates[type](currentW, currentH, spacing, margin, color);
     svg.innerHTML = content;
 }
 
 async function exportPDF() {
     const btn = document.getElementById('btn-pdf');
-    const bgColor = document.getElementById('paperColor').value;
     try {
-        btn.innerText = "Generating...";
-        btn.disabled = true;
+        btn.innerText = "Generating..."; btn.disabled = true;
         const { jsPDF } = window.jspdf;
-        const orient = document.getElementById('orientation').value[0]; // 'p' or 'l'
-        const pdf = new jsPDF(orient, 'mm', document.getElementById('pageSize').value);
+        const pdf = new jsPDF(document.getElementById('orientation').value[0], 'mm', document.getElementById('pageSize').value);
         const count = parseInt(document.getElementById('pageCount').value) || 1;
-        const svgElement = document.getElementById('paper-preview');
-
-        const svgData = new XMLSerializer().serializeToString(svgElement);
+        const svgData = new XMLSerializer().serializeToString(svg);
         const img = new Image();
-        await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-        });
-        const canvas = document.createElement('canvas');
-        canvas.width = currentW * 4; canvas.height = currentH * 4;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = bgColor; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))); });
+        const canvas = document.createElement('canvas'); canvas.width = currentW * 4; canvas.height = currentH * 4;
+        const ctx = canvas.getContext('2d'); ctx.fillStyle = document.getElementById('paperColor').value; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        for (let i = 0; i < count; i++) {
-            if (i > 0) pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, 0, currentW, currentH);
-        }
+        for (let i = 0; i < count; i++) { if (i > 0) pdf.addPage(); pdf.addImage(imgData, 'JPEG', 0, 0, currentW, currentH); }
         pdf.save("BlankCanvas.pdf");
     } catch (e) { alert("PDF Error: " + e.message); } finally { btn.innerText = "PDF"; btn.disabled = false; }
 }
 
 function exportPNG() {
-    const bgColor = document.getElementById('paperColor').value;
     const svgData = new XMLSerializer().serializeToString(svg);
-    const canvas = document.createElement('canvas');
-    canvas.width = currentW * 10; canvas.height = currentH * 10;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = bgColor; ctx.fillRect(0,0,canvas.width,canvas.height);
+    const canvas = document.createElement('canvas'); canvas.width = currentW * 10; canvas.height = currentH * 10;
+    const ctx = canvas.getContext('2d'); ctx.fillStyle = document.getElementById('paperColor').value; ctx.fillRect(0,0,canvas.width,canvas.height);
     const img = new Image();
-    img.onload = function() { 
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); 
-        const link = document.createElement("a"); 
-        link.href = canvas.toDataURL("image/png"); 
-        link.download = "BlankCanvas.png"; 
-        link.click(); 
-    };
+    img.onload = () => { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const link = document.createElement("a"); link.href = canvas.toDataURL("image/png"); link.download = "BlankCanvas.png"; link.click(); };
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
 }
 
