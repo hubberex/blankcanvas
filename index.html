@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlankCanvas | Custom Paper Pro</title>
+<title>BlankCanvas | Designer Paper Pro</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>if (window.jspdf) { window.jsPDF = window.jspdf.jsPDF; }</script>
@@ -23,118 +23,33 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-    margin: 0;
-    background: var(--system-bg);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    margin: 0; background: var(--system-bg); min-height: 100vh; display: flex; flex-direction: column;
 }
 
-/* Header & Help Button */
-.brand-header {
-    background: #FFF;
-    padding: 14px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 0.5px solid rgba(0,0,0,0.1);
-}
+.brand-header { background: #FFF; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+.brand-title { font-weight: 800; font-size: 18px; color: var(--olive-deep); letter-spacing: -0.5px; }
+.help-btn { background: var(--system-bg); border: none; width: 32px; height: 32px; border-radius: 50%; font-weight: 700; cursor: pointer; color: var(--olive-light); display: flex; align-items: center; justify-content: center; }
 
-.brand-title {
-    font-weight: 800;
-    font-size: 18px;
-    color: var(--olive-deep);
-    letter-spacing: -0.5px;
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+.modal-content { background: white; border-radius: 20px; width: 100%; max-width: 450px; padding: 30px; position: relative; }
+.modal-close { position: absolute; top: 20px; right: 20px; background: var(--system-bg); border: none; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-.help-btn {
-    background: var(--system-bg);
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--olive-light);
-    transition: transform 0.2s;
-}
-
-.help-btn:active { transform: scale(0.9); }
-
-/* Modal Overlay */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(8px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 20px;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 450px;
-    padding: 30px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-.modal-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: var(--system-bg);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.modal-content h2 { margin-top: 0; color: var(--olive-deep); font-size: 22px; }
-.help-step { display: flex; gap: 15px; margin-bottom: 20px; }
-.step-num { 
-    background: var(--olive-light); color: white; 
-    min-width: 24px; height: 24px; border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 800;
-}
-.step-text b { display: block; font-size: 14px; margin-bottom: 2px; }
-.step-text p { margin: 0; font-size: 13px; color: var(--label-sec); line-height: 1.4; }
-
-/* Existing App Layout */
 .app-wrapper { flex: 1; display: flex; flex-direction: column; }
 .top-bar { background: var(--glass-bg); padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
-.compact-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.compact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .compact-row.tri { grid-template-columns: 1fr 1fr 1fr; }
 .control-item { display: flex; flex-direction: column; gap: 4px; }
 label { font-size: 10px; color: var(--label-sec); font-weight: 700; text-transform: uppercase; }
 select, input[type="number"], input[type="color"] { background: rgba(120,120,128,0.08); border: none; border-radius: 10px; padding: 8px; font-size: 13px; width: 100%; height: 38px; }
-input[type="color"] { padding: 4px; cursor: pointer; }
-
-.switch { position: relative; width: 44px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider-toggle { position: absolute; inset: 0; background: #ccc; border-radius: 30px; transition: .3s; }
-.slider-toggle:before { content: ""; position: absolute; height: 20px; width: 20px; left: 2px; top: 2px; background: white; border-radius: 50%; transition: .3s; }
-input:checked + .slider-toggle { background: var(--olive-light); }
-input:checked + .slider-toggle:before { transform: translateX(20px); }
 
 .slider-box { display: flex; flex-direction: column; gap: 6px; }
 input[type="range"] { -webkit-appearance: none; height: 4px; background: rgba(0,0,0,0.15); border-radius: 4px; }
 input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: white; border-radius: 50%; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
 
-.segmented-control { display: flex; background: rgba(120,120,128,0.08); padding: 4px; border-radius: 12px; }
-.btn-segment { flex: 1; border: none; background: transparent; padding: 6px; font-weight: 600; font-size: 11px; border-radius: 8px; cursor: pointer; }
-.btn-segment.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-.action-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.btn-main { padding: 10px 2px; border-radius: 8px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; text-transform: uppercase; }
+.action-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.btn-main { padding: 10px 2px; border-radius: 8px; font-size: 10px; font-weight: 700; border: none; cursor: pointer; text-transform: uppercase; }
+.btn-standard { background: var(--olive-deep); color: white; }
+.btn-save { background: #E5E5EA; color: #333; }
 .btn-pdf { background: var(--clay); color: white; }
 .btn-print { background: transparent; border: 1.5px solid var(--olive-deep); color: var(--olive-deep); }
 .btn-svg { background: var(--olive-light); color: white; }
@@ -146,8 +61,10 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
 
 @media (min-width: 1024px) {
     .app-wrapper { flex-direction: row; }
-    .top-bar { width: 340px; height: calc(100vh - 58px); overflow-y: auto; border-right: 0.5px solid rgba(0,0,0,0.1); }
+    .top-bar { width: 340px; height: calc(100vh - 60px); overflow-y: auto; border-right: 0.5px solid rgba(0,0,0,0.1); }
     .viewport { padding: 40px; }
+    .action-row { grid-template-columns: repeat(4, 1fr); }
+    .btn-standard, .btn-save { grid-column: span 2; }
 }
 </style>
 </head>
@@ -160,28 +77,9 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
 
 <div id="helpModal" class="modal-overlay" onclick="toggleHelp(false)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="toggleHelp(false)">Close</button>
-        <h2>Quick Guide</h2>
-        <div class="help-step">
-            <div class="step-num">1</div>
-            <div class="step-text"><b>Select Template</b><p>Choose between Planner, Checklist, Grid, or Creative layouts.</p></div>
-        </div>
-        <div class="help-step">
-            <div class="step-num">2</div>
-            <div class="step-text"><b>Custom Spacing</b><p>Use the Spacing slider to adjust line height or cell size (mm).</p></div>
-        </div>
-        <div class="help-step">
-            <div class="step-num">3</div>
-            <div class="step-text"><b>Set Margins</b><p>Move the margin slider to leave room for hole punches or notes.</p></div>
-        </div>
-        <div class="help-step">
-            <div class="step-num">4</div>
-            <div class="step-text"><b>Pick Your Colors</b><p>Change paper tint (Cream, Gray) and line color for a premium feel.</p></div>
-        </div>
-        <div class="help-step">
-            <div class="step-num">5</div>
-            <div class="step-text"><b>Export High-Res</b><p>Save as PDF for multi-page printing or PNG for digital use.</p></div>
-        </div>
+        <button class="modal-close" onclick="toggleHelp(false)">✕</button>
+        <h2 style="margin-top:0; color:var(--olive-deep)">Designer Presets</h2>
+        <p style="font-size:13px">Your custom standards (e.g., 20.3mm for Habit) are saved here. Use <b>Save as Standard</b> to update presets at any time.</p>
     </div>
 </div>
 
@@ -191,14 +89,16 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
             <div class="control-item">
                 <label>Template</label>
                 <select id="paperType" onchange="generatePaper()">
-                    <option value="checklist" selected>Checklist</option>
-                    <option value="habit">Habit Tracker</option>
+                    <option value="habit" selected>Habit Tracker</option>
                     <option value="calendar">Monthly Calendar</option>
                     <option value="workout">Workout Log</option>
+                    <option value="checklist">Checklist</option>
                     <option value="cornell">Cornell Notes</option>
                     <option value="weekly">Weekly Planner</option>
-                    <option value="lined">Lined Paper</option>
+                    <option value="grid">Simple Grid</option>
+                    <option value="graph">Graph (Math)</option>
                     <option value="dotgrid">Dot Grid</option>
+                    <option value="lined">Lined Paper</option>
                     <option value="music">Music Staff</option>
                 </select>
             </div>
@@ -216,60 +116,23 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
         </div>
 
         <div class="compact-row">
-            <div class="control-item">
-                <label>Size</label>
-                <select id="pageSize" onchange="updatePageLayout()">
-                    <option value="a4">A4</option>
-                    <option value="letter">Letter</option>
-                </select>
-            </div>
-            <div class="control-item">
-                <label>Format</label>
-                <select id="orientation" onchange="updatePageLayout()">
-                    <option value="portrait" selected>Portrait</option>
-                    <option value="landscape">Landscape</option>
-                </select>
-            </div>
+            <div class="control-item"><label>Size</label><select id="pageSize" onchange="updatePageLayout()"><option value="a4">A4</option><option value="letter">Letter</option></select></div>
+            <div class="control-item"><label>Format</label><select id="orientation" onchange="updatePageLayout()"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div>
         </div>
 
         <div class="compact-row tri">
-            <div class="control-item">
-                <label>Pages</label>
-                <input type="number" id="pageCount" value="1" min="1" max="50">
-            </div>
-            <div class="control-item" style="align-items:center;">
-                <label>Holes</label>
-                <label class="switch">
-                    <input type="checkbox" id="holePunch" onchange="generatePaper()">
-                    <span class="slider-toggle"></span>
-                </label>
-            </div>
-            <div class="control-item">
-                <label>Lines</label>
-                <input type="color" id="lineColor" value="#555555" onchange="generatePaper()">
-            </div>
+            <div class="control-item"><label>Pages</label><input type="number" id="pageCount" value="1" min="1"></div>
+            <div class="control-item" style="text-align:center"><label>Holes</label><input type="checkbox" id="holePunch" onchange="generatePaper()"></div>
+            <div class="control-item"><label>Lines</label><input type="color" id="lineColor" value="#555555" onchange="generatePaper()"></div>
         </div>
         
-        <div class="slider-box">
-            <label id="zoom-label">Preview Zoom: 85%</label>
-            <input type="range" id="zoom" min="30" max="250" value="85" oninput="updateZoom()">
-        </div>
-        <div class="slider-box">
-            <label id="spacing-label">Spacing: 20.0mm</label>
-            <input type="range" id="spacing" min="10" max="120" value="80" oninput="updateUI('spacing')">
-        </div>
-        <div class="slider-box">
-            <label id="margin-label">Margin: 20.0mm</label>
-            <input type="range" id="margin" min="0" max="200" value="80" oninput="updateUI('margin')">
-        </div>
-
-        <div class="segmented-control">
-            <button class="btn-segment" onclick="quickMargin(0, this)">None</button>
-            <button class="btn-segment active" onclick="quickMargin(20, this)">Normal</button>
-            <button class="btn-segment" onclick="quickMargin(50, this)">Wide</button>
-        </div>
+        <div class="slider-box"><label id="zoom-label">Preview Zoom: 85%</label><input type="range" id="zoom" min="30" max="250" value="85" oninput="updateZoom()"></div>
+        <div class="slider-box"><label id="spacing-label">Spacing: 25.0mm</label><input type="range" id="spacing" min="10" max="150" value="100" oninput="updateUI('spacing')"></div>
+        <div class="slider-box"><label id="margin-label">Margin: 20.0mm</label><input type="range" id="margin" min="0" max="200" value="80" oninput="updateUI('margin')"></div>
 
         <div class="action-row">
+            <button class="btn-main btn-standard" onclick="applyStandardPreset()">★ Standard View</button>
+            <button class="btn-main btn-save" onclick="saveAsStandard()">Save as Standard</button>
             <button id="btn-pdf" class="btn-main btn-pdf" onclick="exportPDF()">PDF</button>
             <button class="btn-main btn-print" onclick="window.print()">Print</button>
             <button class="btn-main btn-svg" onclick="exportSVG()">SVG</button>
@@ -278,255 +141,239 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
     </div>
 
     <div class="viewport">
-        <div class="paper-container" id="container">
-            <svg id="paper-preview"></svg>
-        </div>
+        <div class="paper-container" id="container"><svg id="paper-preview"></svg></div>
     </div>
 </div>
 
 <script>
 const svg = document.getElementById('paper-preview');
 const container = document.getElementById('container');
-let currentW = 210, currentH = 297;
+let currentW = 210, currentH = 297, lastT = "";
 
-function toggleHelp(show) {
-    document.getElementById('helpModal').style.display = show ? 'flex' : 'none';
+let templatePresets = {
+    habit: { spacing: 110, margin: 60, orientation: 'portrait' }, // Updated spacing for minimalist look
+    workout: { spacing: 25.2, margin: 60, orientation: 'portrait' },  
+    checklist: { spacing: 23.2, margin: 60, orientation: 'portrait' },
+    weekly: { spacing: 26, margin: 60, orientation: 'portrait' },     
+    lined: { spacing: 25.2, margin: 60, orientation: 'portrait' },    
+    music: { spacing: 25.2, margin: 60, orientation: 'portrait' },    
+    graph: { spacing: 25.2, margin: 101.2, orientation: 'portrait' }, 
+    calendar: { spacing: 80, margin: 60, orientation: 'portrait' },
+    cornell: { spacing: 28, margin: 60, orientation: 'portrait' },
+    grid: { spacing: 20, margin: 60, orientation: 'portrait' },
+    dotgrid: { spacing: 20, margin: 60, orientation: 'portrait' }
+};
+
+const saved = localStorage.getItem('BC_Presets_v3');
+if (saved) templatePresets = {...templatePresets, ...JSON.parse(saved)};
+
+function toggleHelp(show) { document.getElementById('helpModal').style.display = show ? 'flex' : 'none'; }
+
+function applyStandardPreset() {
+    const t = document.getElementById('paperType').value;
+    const p = templatePresets[t] || { spacing: 100, margin: 60, orientation: 'portrait' };
+    document.getElementById('spacing').value = p.spacing;
+    document.getElementById('margin').value = p.margin;
+    document.getElementById('orientation').value = p.orientation;
+    updateUI('spacing'); updateUI('margin'); updatePageLayout();
+}
+
+function saveAsStandard() {
+    const t = document.getElementById('paperType').value;
+    templatePresets[t] = {
+        spacing: parseFloat(document.getElementById('spacing').value),
+        margin: parseFloat(document.getElementById('margin').value),
+        orientation: document.getElementById('orientation').value
+    };
+    localStorage.setItem('BC_Presets_v3', JSON.stringify(templatePresets));
+    alert(`${t.toUpperCase()} standard updated!`);
 }
 
 const templates = {
-    checklist: (w, h, spacing, margin, color) => {
+    habit: (w, h, sp, ma, col) => {
         let out = '';
-        const side = margin || 15;
-        const sections = ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"];
-        const sectionH = (h - 20) / 4; 
-        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-        sections.forEach((title, idx) => {
-            const startY = 15 + (idx * sectionH);
-            out += `<text x="${side}" y="${startY}" font-size="4.5" font-weight="900" letter-spacing="2" opacity="0.9">${title}</text>`;
-            out += `<line x1="${side}" y1="${startY+3}" x2="${w-side}" y2="${startY+3}" stroke="${color}" stroke-width="0.4" opacity="0.2"/>`;
-            const itemsY = startY + 12;
-            const numRows = Math.floor((sectionH - 18) / spacing);
-            for (let i = 0; i < numRows; i++) {
-                const y = itemsY + (i * spacing);
-                out += `<rect x="${side}" y="${y-2.5}" width="3" height="3" fill="none" stroke="${color}" stroke-width="0.2" opacity="0.6"/>`;
-                out += `<line x1="${side+5}" y1="${y}" x2="${side+(w-side*2)/2-5}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
-                out += `<rect x="${side+(w-side*2)/2+5}" y="${y-2.5}" width="3" height="3" fill="none" stroke="${color}" stroke-width="0.2" opacity="0.6"/>`;
-                out += `<line x1="${side+(w-side*2)/2+10}" y1="${y}" x2="${w-side}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
-            }
-        });
-        out += `</g>`; return out;
-    },
+        const side = ma || 15;
+        const usableW = w - side * 2;
+        
+        // Minimalist Header
+        out += `<g fill="${col}" font-family="Helvetica" text-anchor="middle">
+            <text x="${w/2}" y="20" font-size="9" font-weight="900" letter-spacing="5">HABIT TRACKER</text>
+            <text x="${w/2}" y="30" font-size="2.8" font-weight="bold" opacity="0.4">MONTH OF . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</text>
+        </g>`;
 
-    habit: (w, h, spacing, margin, color) => {
-        let out = '';
-        const side = margin || 15;
-        const accentW = 8;
-        const usableW = w - side - accentW - 15;
-        const contentX = side + accentW + 10;
-        out += `<rect x="${side}" y="0" width="${accentW}" height="${h}" fill="${color}" opacity="0.3"/>`;
-        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif" text-anchor="middle">`;
-        out += `<text x="${w/2 + accentW/2}" y="15" font-size="8" font-weight="900" letter-spacing="4" opacity="0.9">HABIT TRACKER</text>`;
-        out += `<text x="${w/2 + accentW/2}" y="25" font-size="3" font-weight="bold" opacity="0.5" letter-spacing="1.5">MONTH OF . . . . . . . . . . . . . . . . . . . . . . . . . </text>`;
-        out += `</g>`;
-        const drawHabitBlock = (startY) => {
-            let block = `<g transform="translate(${contentX}, ${startY})" fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-            block += `<text x="0" y="0" font-size="3" font-weight="900" letter-spacing="0.5">HABIT :</text>`;
-            block += `<line x1="0" y1="14" x2="${usableW * 0.4}" y2="14" stroke="${color}" stroke-width="0.1" opacity="0.4"/>`;
-            const circleR = 2.8, circleGap = 7.5, startCircleX = usableW * 0.45;
-            for(let i=1; i<=31; i++) {
-                const cx = startCircleX + (((i-1)%11) * circleGap);
-                const cy = (Math.floor((i-1)/11) * circleGap) - 2;
-                block += `<circle cx="${cx}" cy="${cy}" r="${circleR}" fill="none" stroke="${color}" stroke-width="0.15" opacity="0.8"/>`;
-                block += `<text x="${cx}" y="${cy + 1}" font-size="1.8" text-anchor="middle" font-weight="bold" opacity="0.6">${i}</text>`;
+        const drawHabit = (sY) => {
+            let b = `<g transform="translate(${side}, ${sY})" fill="${col}" font-family="Helvetica">`;
+
+            // HABIT text + line ONLY
+            b += `<text x="0" y="0" font-size="3.2" font-weight="bold">HABIT :</text>`;
+            b += `<line x1="14" y1="0.5" x2="${usableW * 0.42}" y2="0.5" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+
+            // Circles
+            const startX = usableW * 0.45;
+            for (let i = 1; i <= 31; i++) {
+                const cx = startX + ((i - 1) % 11) * 7;
+                const cy = -1 + Math.floor((i - 1) / 11) * 7;
+                b += `<circle cx="${cx}" cy="${cy}" r="2.6" fill="none" stroke="${col}" stroke-width="0.15" opacity="0.6"/>`;
+                b += `<text x="${cx}" y="${cy + 0.8}" font-size="1.8" text-anchor="middle" font-weight="bold" opacity="0.5">${i}</text>`;
             }
-            const footerY = 22;
-            block += `<line x1="0" y1="${footerY}" x2="${usableW}" y2="${footerY}" stroke="${color}" stroke-width="0.3" opacity="0.2"/>`;
-            block += `<text x="0" y="${footerY + 5}" font-size="2.2" font-weight="900" opacity="0.5">GOAL :</text>`;
-            block += `<text x="${usableW * 0.55}" y="${footerY + 5}" font-size="2.2" font-weight="900" opacity="0.5">REWARD :</text>`;
-            block += `<line x1="0" y1="${footerY + 8}" x2="${usableW}" y2="${footerY + 8}" stroke="${color}" stroke-width="0.5" opacity="0.2"/>`;
-            block += `</g>`; return block;
+
+            // GOAL line ONLY
+            b += `<text x="0" y="22" font-size="2.5" font-weight="bold" opacity="0.6">GOAL :</text>`;
+            b += `<line x1="12" y1="22.5" x2="${usableW * 0.42}" y2="22.5" stroke="${col}" stroke-width="0.15" opacity="0.3"/>`;
+
+            // REWARD line ONLY
+            b += `<text x="${usableW * 0.45}" y="22" font-size="2.5" font-weight="bold" opacity="0.6">REWARD :</text>`;
+            b += `<line x1="${usableW * 0.45 + 18}" y1="22.5" x2="${usableW}" y2="22.5" stroke="${col}" stroke-width="0.15" opacity="0.3"/>`;
+
+            return b + `</g>`;
         };
-        let currentY = 40; const blockStep = spacing * 1.8;
-        while (currentY + 35 < h) { out += drawHabitBlock(currentY); currentY += blockStep; }
-        return out;
-    },
 
-    workout: (w, h, spacing, margin, color) => {
-        let out = '';
-        const side = margin || 15, usableW = w - (side * 2), rowH = spacing, logAreaH = h / 2;
-        const drawLog = (yOffset) => {
-            let log = `<g transform="translate(${side}, ${yOffset + 12})" fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-            log += `<text x="0" y="0" font-size="5.5" font-weight="900" letter-spacing="2.5" opacity="0.9">WORKOUT LOG</text>`;
-            log += `<line x1="0" y1="3" x2="${usableW}" y2="3" stroke="${color}" stroke-width="0.4" opacity="0.2"/>`;
-            const fieldY = 15;
-            log += `<text x="0" y="${fieldY}" font-size="2.8" font-weight="bold" opacity="0.6">DATE</text><line x1="12" y1="${fieldY+0.5}" x2="${usableW*0.35}" y2="${fieldY+0.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
-            log += `<text x="${usableW*0.4}" y="${fieldY}" font-size="2.8" font-weight="bold" opacity="0.6">DURATION</text><line x1="${usableW*0.6}" y1="${fieldY+0.5}" x2="${usableW}" y2="${fieldY+0.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
-            log += `<text x="0" y="${fieldY+8}" font-size="2.8" font-weight="bold" opacity="0.6">MUSCLE GROUP</text><line x1="28" y1="${fieldY+8.5}" x2="${usableW}" y2="${fieldY+8.5}" stroke="${color}" stroke-width="0.15" opacity="0.4"/>`;
-            const resY = fieldY + 16, tableW = usableW, col1W = tableW * 0.35, setW = (tableW - col1W) / 5;
-            log += `<rect x="0" y="${resY}" width="${tableW}" height="${rowH}" fill="${color}" opacity="0.04"/>`;
-            log += `<text x="${col1W/2}" y="${resY + (rowH/2) + 0.8}" font-size="2.2" font-weight="bold" text-anchor="middle" letter-spacing="0.5">EXERCISE</text>`;
-            for(let i=1; i<=5; i++) log += `<text x="${col1W+(i-1)*setW+setW/2}" y="${resY+(rowH/2)+0.8}" font-size="2" font-weight="bold" text-anchor="middle" opacity="0.8">SET ${i}</text>`;
-            const numRows = Math.floor((logAreaH - resY - 20) / rowH);
-            for(let i=0; i <= numRows; i++) {
-                const y = resY + (i * rowH);
-                log += `<line x1="0" y1="${y}" x2="${tableW}" y2="${y}" stroke="${color}" stroke-width="${(i===0||i===numRows)?0.25:0.1}" opacity="${(i===0||i===numRows)?0.8:0.2}"/>`;
-            }
-            log += `<line x1="0" y1="${resY}" x2="0" y2="${resY+numRows*rowH}" stroke="${color}" stroke-width="0.25" opacity="0.8"/>`;
-            log += `<line x1="${col1W}" y1="${resY}" x2="${col1W}" y2="${resY+numRows*rowH}" stroke="${color}" stroke-width="0.15" opacity="0.3"/>`;
-            for(let i=1; i<=5; i++) log += `<line x1="${col1W+i*setW}" y1="${resY}" x2="${col1W+i*setW}" y2="${resY+numRows*rowH}" stroke="${color}" stroke-width="${i===5?0.25:0.15}" opacity="${i===5?0.8:0.3}"/>`;
-            log += `</g>`; return log;
-        };
-        out += drawLog(0); out += `<line x1="${side+usableW*0.4}" y1="${h/2}" x2="${side+usableW*0.6}" y2="${h/2}" stroke="${color}" stroke-width="0.15" opacity="0.2"/>`;
-        out += drawLog(h/2); return out;
-    },
-
-    calendar: (w, h, spacing, margin, color) => {
-        let out = '';
-        const side = margin || 15, topM = 35, usableW = w - (side * 2), usableH = h - topM - 15;
-        const cols = 7, rows = 5, cellW = usableW / cols, cellH = usableH / rows;
-        const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
-        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-        out += `<text x="${side}" y="18" font-size="9" font-weight="900" letter-spacing="3" opacity="0.9">MONTH</text>`;
-        out += `<text x="${w-side}" y="18" font-size="9" font-weight="900" letter-spacing="3" text-anchor="end" opacity="0.9">YEAR</text>`;
-        out += `<line x1="${side}" y1="21" x2="${side+39}" y2="21" stroke="${color}" stroke-width="0.6" opacity="0.9"/>`;
-        out += `<line x1="${w-side-31}" y1="21" x2="${w-side}" y2="21" stroke="${color}" stroke-width="0.6" opacity="0.9"/>`;
-        out += `<rect x="${side}" y="${topM-12}" width="${usableW}" height="8" fill="${color}" opacity="0.03"/>`;
-        days.forEach((day, i) => out += `<text x="${side+(i*cellW)+(cellW/2)}" y="${topM-6.5}" font-size="2.8" font-weight="900" text-anchor="middle" letter-spacing="0.8" opacity="0.6">${day}</text>`);
-        out += `<g fill="none" stroke="${color}">`;
-        for(let r=0; r<=rows; r++) out += `<line x1="${side}" y1="${topM+(r*cellH)}" x2="${side+usableW}" y2="${topM+(r*cellH)}" stroke-width="${(r===0||r===rows)?0.3:0.1}" opacity="${(r===0||r===rows)?0.8:0.2}"/>`;
-        for(let c=0; c<=cols; c++) out += `<line x1="${side+(c*cellW)}" y1="${topM}" x2="${side+(c*cellW)}" y2="${topM+usableH}" stroke-width="${(c===0||c===cols)?0.3:0.1}" opacity="${(c===0||c===cols)?0.8:0.2}"/>`;
-        for(let i=0; i<35; i++) out += `<path d="M${side+((i%7)*cellW)+1.5} ${topM+(Math.floor(i/7)*cellH)+5.5} L${side+((i%7)*cellW)+1.5} ${topM+(Math.floor(i/7)*cellH)+1.5} L${side+((i%7)*cellW)+5.5} ${topM+(Math.floor(i/7)*cellH)+1.5}" stroke-width="0.1" opacity="0.15"/>`;
-        out += `</g></g>`; return out;
-    },
-
-    cornell: (w, h, spacing, margin, color) => {
-        let out = ''; const side = margin || 15, cuesW = 50, summaryH = 45, topH = 20, usableW = w - (side * 2);
-        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-        out += `<text x="${side}" y="15" font-size="6" font-weight="900" letter-spacing="2">TOPIC</text>`;
-        out += `<line x1="${side+25}" y1="16" x2="${w-side}" y2="16" stroke="${color}" stroke-width="0.2" opacity="0.3"/>`;
-        out += `<rect x="${side}" y="${topH}" width="${usableW}" height="${h-topH-summaryH-side}" fill="none" stroke="${color}" stroke-width="0.3" opacity="0.6"/>`;
-        out += `<line x1="${side+cuesW}" y1="${topH}" x2="${side+cuesW}" y2="${h-summaryH-side}" stroke="${color}" stroke-width="0.3" opacity="0.6"/>`;
-        for (let y = topH + spacing; y < h-summaryH-side; y += spacing) out += `<line x1="${side+cuesW}" y1="${y}" x2="${w-side}" y2="${y}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
-        out += `<rect x="${side}" y="${h-summaryH-side+5}" width="${usableW}" height="${summaryH-5}" fill="${color}" opacity="0.03"/>`;
-        out += `<text x="${side+2}" y="${h-summaryH-side+10}" font-size="3" font-weight="900">SUMMARY</text>`;
-        out += `</g>`; return out;
-    },
-
-    weekly: (w, h, spacing, margin, color) => {
-        let out = ''; const side = margin || 15, days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"], dayH = (h - 30) / 7;
-        out += `<g fill="${color}" font-family="Helvetica, Arial, sans-serif">`;
-        days.forEach((day, i) => {
-            let y = 20 + (i * dayH);
-            out += `<text x="${side}" y="${y}" font-size="4" font-weight="900" letter-spacing="1">${day}</text>`;
-            out += `<line x1="${side}" y1="${y+2}" x2="${w-side}" y2="${y+2}" stroke="${color}" stroke-width="0.3" opacity="0.6"/>`;
-            for (let sY = y + spacing; sY < y + dayH - 5; sY += spacing) out += `<line x1="${side+10}" y1="${sY}" x2="${w-side}" y2="${sY}" stroke="${color}" stroke-width="0.1" opacity="0.3"/>`;
-        });
-        out += `</g>`; return out;
-    },
-
-    lined: (w, h, spacing, margin, color) => {
-        let out = ''; const side = margin || 15;
-        if (side > 0) out += `<line x1="${side}" y1="0" x2="${side}" y2="${h}" stroke="${color}" stroke-width="0.4" opacity="0.3"/>`;
-        for (let y = 25; y < h - 15; y += spacing) out += `<line x1="${side}" y1="${y}" x2="${w-10}" y2="${y}" stroke="${color}" stroke-width="0.15" opacity="0.5"/>`;
-        return out;
-    },
-
-    dotgrid: (w, h, spacing, margin, color) => {
-        let out = `<g fill="${color}" opacity="0.4">`; const side = margin || 15;
-        for (let x = side; x <= w - side; x += spacing) for (let y = 25; y <= h - 15; y += spacing) out += `<circle cx="${x}" cy="${y}" r="0.4"/>`;
-        out += `</g>`; return out;
-    },
-
-    music: (w, h, spacing, margin, color) => {
-        let out = ''; const side = margin || 15, lineGap = 2.5, staffGap = spacing * 1.5; let y = 25;
-        while (y + (4 * lineGap) < h - 15) {
-            for (let i = 0; i < 5; i++) out += `<line x1="${side}" y1="${y+(i*lineGap)}" x2="${w-side}" y2="${y+(i*lineGap)}" stroke="${color}" stroke-width="0.2" opacity="0.8"/>`;
-            out += `<line x1="${side}" y1="${y}" x2="${side}" y2="${y+4*lineGap}" stroke="${color}" stroke-width="0.5"/>`;
-            out += `<line x1="${w-side}" y1="${y}" x2="${w-side}" y2="${y+4*lineGap}" stroke="${color}" stroke-width="0.5"/>`;
-            y += (4 * lineGap) + staffGap;
+        let y = 48;
+        while (y + 30 < h) {
+            out += drawHabit(y);
+            y += sp;
         }
+        return out;
+    },
+    calendar: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15, topM = 35, usableW = w-side*2, usableH = h-topM-15, cellW = usableW/7, cellH = usableH/5;
+        const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+        out += `<g fill="${col}" font-family="Helvetica"><text x="${side}" y="18" font-size="9" font-weight="900" letter-spacing="3">MONTH</text><text x="${w-side}" y="18" font-size="9" font-weight="900" letter-spacing="3" text-anchor="end">YEAR</text>`;
+        out += `<line x1="${side}" y1="21" x2="${side+39}" y2="21" stroke="${col}" stroke-width="0.6"/><line x1="${w-side-31}" y1="21" x2="${w-side}" y2="21" stroke="${col}" stroke-width="0.6"/><rect x="${side}" y="${topM-12}" width="${usableW}" height="8" opacity="0.03"/>`;
+        days.forEach((day, i) => out += `<text x="${side+(i*cellW)+(cellW/2)}" y="${topM-6.5}" font-size="2.8" font-weight="900" text-anchor="middle">${day}</text>`);
+        for(let r=0; r<=5; r++) out += `<line x1="${side}" y1="${topM+r*cellH}" x2="${w-side}" y2="${topM+r*cellH}" stroke="${col}" stroke-width="${(r===0||r===5)?0.3:0.1}" opacity="${(r===0||r===5)?0.8:0.2}"/>`;
+        for(let c=0; c<=7; c++) out += `<line x1="${side+c*cellW}" y1="${topM}" x2="${side+c*cellW}" y2="${h-15}" stroke="${col}" stroke-width="${(c===0||c===7)?0.3:0.1}" opacity="${(c===0||c===7)?0.8:0.2}"/>`;
+        for(let i=0; i<35; i++) out += `<path d="M${side+(i%7)*cellW+1.5} ${topM+Math.floor(i/7)*cellH+5.5} v-4 h4" fill="none" stroke="${col}" stroke-width="0.1" opacity="0.15"/>`;
+        return out + `</g>`;
+    },
+    workout: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15, usableW = w-side*2, logH = h/2;
+        const drawLog = (yOff) => {
+            let log = `<g transform="translate(${side}, ${yOff+12})" fill="${col}" font-family="Helvetica"><text x="0" y="0" font-size="5.5" font-weight="900" letter-spacing="2.5">WORKOUT LOG</text><line x1="0" y1="3" x2="${usableW}" y2="3" stroke="${col}" stroke-width="0.4" opacity="0.2"/>`;
+            const fY = 15; log += `<text x="0" y="${fY}" font-size="2.8" font-weight="bold" opacity="0.6">DATE</text><line x1="12" y1="${fY+0.5}" x2="${usableW*0.35}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+            const rY = fY+16, c1W = usableW*0.35, sW = (usableW-c1W)/5;
+            log += `<rect x="0" y="${rY}" width="${usableW}" height="${sp}" fill="${col}" opacity="0.04"/><text x="${c1W/2}" y="${rY+sp/2+0.8}" font-size="2.2" font-weight="bold" text-anchor="middle">EXERCISE</text>`;
+            for(let i=1; i<=5; i++) log += `<text x="${c1W+(i-1)*sW+sW/2}" y="${rY+sp/2+0.8}" font-size="2" font-weight="bold" text-anchor="middle">SET ${i}</text>`;
+            const rows = Math.floor((logH-rY-20)/sp);
+            for(let i=0; i<=rows; i++) log += `<line x1="0" y1="${rY+(i*sp)}" x2="${usableW}" y2="${rY+(i*sp)}" stroke="${col}" stroke-width="${(i===0||i===rows)?0.25:0.1}" opacity="${(i===0||i===rows)?0.8:0.2}"/>`;
+            log += `<line x1="0" y1="${rY}" x2="0" y2="${rY+rows*sp}" stroke="${col}" stroke-width="0.25" opacity="0.8"/>`;
+            log += `<line x1="${c1W}" y1="${rY}" x2="${c1W}" y2="${rY+rows*sp}" stroke="${col}" stroke-width="0.15" opacity="0.3"/>`;
+            for(let i=1; i<=5; i++) { const x = c1W + i*sW; log += `<line x1="${x}" y1="${rY}" x2="${x}" y2="${rY+rows*sp}" stroke="${col}" stroke-width="${i===5?0.25:0.15}" opacity="${i===5?0.8:0.3}"/>`; }
+            return log + `</g>`;
+        };
+        out += drawLog(0); out += `<line x1="${side+usableW*0.4}" y1="${h/2}" x2="${side+usableW*0.6}" y2="${h/2}" stroke="${col}" stroke-width="0.15" opacity="0.2"/>`;
+        return out + drawLog(h/2);
+    },
+    cornell: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15, cuesW = 50, sumH = 45, topH = 20, usableW = w-side*2;
+        out += `<g fill="${col}" font-family="Helvetica"><text x="${side}" y="15" font-size="6" font-weight="900" letter-spacing="2">TOPIC</text>`;
+        out += `<rect x="${side}" y="${topH}" width="${usableW}" height="${h-topH-sumH-side}" fill="none" stroke="${col}" stroke-width="0.3" opacity="0.6"/>`;
+        out += `<line x1="${side+cuesW}" y1="${topH}" x2="${side+cuesW}" y2="${h-sumH-side}" stroke="${col}" stroke-width="0.3" opacity="0.6"/>`;
+        for (let y = topH + sp; y < h-sumH-side; y += sp) out += `<line x1="${side+cuesW}" y1="${y}" x2="${w-side}" y2="${y}" stroke="${col}" stroke-width="0.1" opacity="0.3"/>`;
+        out += `<rect x="${side}" y="${h-sumH-side+5}" width="${usableW}" height="${sumH-5}" fill="${col}" opacity="0.03"/><text x="${side+2}" y="${h-sumH-side+10}" font-size="3" font-weight="900">SUMMARY</text></g>`;
+        return out;
+    },
+    music: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15, gap = 2.5, sGap = sp*1.5; let y = 25;
+        while(y+(4*gap)<h-15) {
+            for(let i=0; i<5; i++) out += `<line x1="${side}" y1="${y+i*gap}" x2="${w-side}" y2="${y+i*gap}" stroke="${col}" stroke-width="0.2"/>`;
+            out += `<line x1="${side}" y1="${y}" x2="${side}" y2="${y+4*gap}" stroke="${col}" stroke-width="0.5"/><line x1="${w-side}" y1="${y}" x2="${w-side}" y2="${y+4*gap}" stroke="${col}" stroke-width="0.5"/>`;
+            y += (4*gap)+sGap;
+        }
+        return out;
+    },
+    checklist: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15, sec = ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"], sH = (h-20)/4;
+        sec.forEach((t, i) => {
+            const y = 15+(i*sH); out += `<text x="${side}" y="${y}" font-family="Helvetica" font-size="4.5" font-weight="900" fill="${col}">${t}</text>`;
+            for(let r=0; r<Math.floor((sH-15)/sp); r++) {
+                const rY = y+10+(r*sp);
+                out += `<rect x="${side}" y="${rY-2}" width="3" height="3" fill="none" stroke="${col}" stroke-width="0.2"/><line x1="${side+5}" y1="${rY}" x2="${side+(w-side*2)/2-5}" y2="${rY}" stroke="${col}" stroke-width="0.1" opacity="0.3"/>`;
+                out += `<rect x="${side+(w-side*2)/2+5}" y="${rY-2}" width="3" height="3" fill="none" stroke="${col}" stroke-width="0.2"/><line x1="${side+(w-side*2)/2+10}" y1="${rY}" x2="${w-side}" y2="${rY}" stroke="${col}" stroke-width="0.1" opacity="0.3"/>`;
+            }
+        });
+        return out;
+    },
+    weekly: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15, dH = (h-30)/7, days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+        days.forEach((d, i) => {
+            const y = 20+(i*dH); out += `<text x="${side}" y="${y}" font-family="Helvetica" font-size="4" font-weight="900" fill="${col}">${d}</text>`;
+            for(let sy=y+sp; sy<y+dH-2; sy+=sp) out += `<line x1="${side+12}" y1="${sy}" x2="${w-side}" y2="${sy}" stroke="${col}" stroke-width="0.1" opacity="0.3"/>`;
+        });
+        return out;
+    },
+    grid: (w, h, sp, ma, col) => {
+        const side = ma || 15, topM = 25, usableW = w-side*2, usableH = h-topM-15, c = Math.floor(usableW/sp), r = Math.floor(usableH/sp);
+        const gW = c*sp, gH = r*sp, sX = side+(usableW-gW)/2, sY = topM+(usableH-gH)/2;
+        let out = `<g stroke="${col}" stroke-width="0.1" opacity="0.4">`;
+        for(let i=0; i<=c; i++) out += `<line x1="${sX+i*sp}" y1="${sY}" x2="${sX+i*sp}" y2="${sY+gH}"/>`;
+        for(let i=0; i<=r; i++) out += `<line x1="${sX}" y1="${sY+i*sp}" x2="${sX+gW}" y2="${sY+i*sp}"/>`;
+        return out + `<rect x="${sX}" y="${sY}" width="${gW}" height="${gH}" fill="none" stroke-width="0.3" opacity="0.8"/></g>`;
+    },
+    graph: (w, h, sp, ma, col) => {
+        const side = ma || 15, topM = 25, usableW = w-side*2, usableH = h-topM-15, c = Math.floor(usableW/sp), r = Math.floor(usableH/sp);
+        const gW = c*sp, gH = r*sp, sX = side+(usableW-gW)/2, sY = topM+(usableH-gH)/2;
+        let out = `<g stroke="${col}">`;
+        for(let i=0; i<=c; i++) { const m = i%5===0; out += `<line x1="${sX+i*sp}" y1="${sY}" x2="${sX+i*sp}" y2="${sY+gH}" stroke-width="${m?0.35:0.1}" opacity="${m?0.8:0.25}"/>`; }
+        for(let i=0; i<=r; i++) { const m = i%5===0; out += `<line x1="${sX}" y1="${sY+i*sp}" x2="${sX+gW}" y2="${sY+i*sp}" stroke-width="${m?0.35:0.1}" opacity="${m?0.8:0.25}"/>`; }
+        return out + `<rect x="${sX}" y="${sY}" width="${gW}" height="${gH}" fill="none" stroke-width="0.4" opacity="0.9"/></g>`;
+    },
+    dotgrid: (w, h, sp, ma, col) => {
+        const side = ma || 15, topM = 25, usableW = w-side*2, usableH = h-topM-15, c = Math.floor(usableW/sp), r = Math.floor(usableH/sp);
+        const sX = side+(usableW-c*sp)/2, sY = topM+(usableH-r*sp)/2;
+        let out = `<g fill="${col}" opacity="0.4">`;
+        for(let i=0; i<=c; i++) for(let j=0; j<=r; j++) out += `<circle cx="${sX+i*sp}" cy="${sY+j*sp}" r="0.4"/>`;
+        return out + `</g>`;
+    },
+    lined: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15; if(side>0) out += `<line x1="${side}" y1="0" x2="${side}" y2="${h}" stroke="${col}" stroke-width="0.4" opacity="0.3"/>`;
+        for(let y=25; y<h-15; y+=sp) out += `<line x1="${side}" y1="${y}" x2="${w-10}" y2="${y}" stroke="${col}" stroke-width="0.15" opacity="0.5"/>`;
         return out;
     }
 };
 
-function updateZoom() {
-    const zoom = document.getElementById('zoom').value;
-    document.getElementById('zoom-label').innerText = `Preview Zoom: ${zoom}%`;
-    container.style.setProperty('--zoom', zoom);
-}
-
+function updateZoom() { const z = document.getElementById('zoom').value; document.getElementById('zoom-label').innerText = `Preview Zoom: ${z}%`; container.style.setProperty('--zoom', z); }
 function updatePageLayout() {
-    const size = document.getElementById('pageSize').value;
-    const orient = document.getElementById('orientation').value;
-    let w = (size === 'a4') ? 210 : 215.9;
-    let h = (size === 'a4') ? 297 : 279.4;
-    if (orient === 'landscape') [w, h] = [h, w];
-    currentW = w; currentH = h;
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    container.style.aspectRatio = `${w} / ${h}`;
-    generatePaper();
+    const s = document.getElementById('pageSize').value, o = document.getElementById('orientation').value;
+    let w = (s==='a4')?210:215.9, h = (s==='a4')?297:279.4;
+    if(o==='landscape') [w, h] = [h, w]; currentW = w; currentH = h;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`); container.style.aspectRatio = `${w}/${h}`; generatePaper();
 }
-
 function updateUI(id) {
-    const val = document.getElementById(id).value;
-    if (id === 'spacing') document.getElementById('spacing-label').innerText = `Spacing: ${(val/4).toFixed(1)}mm`;
-    if (id === 'margin') document.getElementById('margin-label').innerText = `Margin: ${(val/4).toFixed(1)}mm`;
+    const v = document.getElementById(id).value;
+    if(id==='spacing') document.getElementById('spacing-label').innerText = `Spacing: ${(v/4).toFixed(1)}mm`;
+    if(id==='margin') document.getElementById('margin-label').innerText = `Margin: ${(v/4).toFixed(1)}mm`;
     generatePaper();
 }
-
-function quickMargin(mm, btn) {
-    document.getElementById('margin').value = mm * 4;
-    document.querySelectorAll('.btn-segment').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('margin-label').innerText = `Margin: ${mm.toFixed(1)}mm`;
-    generatePaper();
-}
-
 function generatePaper() {
-    const type = document.getElementById('paperType').value;
-    const spacing = parseInt(document.getElementById('spacing').value)/4;
-    const margin = parseInt(document.getElementById('margin').value)/4;
-    const color = document.getElementById('lineColor').value;
-    const bgColor = document.getElementById('paperColor').value;
-    const holes = document.getElementById('holePunch').checked;
-    let content = `<rect width="100%" height="100%" fill="${bgColor}"/>`;
-    if (holes) [0.15, 0.5, 0.85].forEach(yP => content += `<circle cx="12" cy="${currentH*yP}" r="3.5" fill="none" stroke="${color}" opacity="0.2" stroke-width="0.3"/>`);
-    if (templates[type]) content += templates[type](currentW, currentH, spacing, margin, color);
+    const t = document.getElementById('paperType').value;
+    if(lastT !== t) { lastT = t; applyStandardPreset(); return; }
+    const sp = parseInt(document.getElementById('spacing').value)/4, ma = parseInt(document.getElementById('margin').value)/4, col = document.getElementById('lineColor').value, bg = document.getElementById('paperColor').value;
+    let content = `<rect width="100%" height="100%" fill="${bg}"/>`;
+    if(document.getElementById('holePunch').checked) [0.15, 0.5, 0.85].forEach(y => content += `<circle cx="12" cy="${currentH*y}" r="3.5" fill="none" stroke="${col}" opacity="0.2" stroke-width="0.3"/>`);
+    if(templates[t]) content += templates[t](currentW, currentH, sp, ma, col);
     svg.innerHTML = content;
 }
-
 async function exportPDF() {
-    const btn = document.getElementById('btn-pdf');
+    const btn = document.getElementById('btn-pdf'); btn.innerText = "Generating..."; btn.disabled = true;
     try {
-        btn.innerText = "Generating..."; btn.disabled = true;
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF(document.getElementById('orientation').value[0], 'mm', document.getElementById('pageSize').value);
-        const count = parseInt(document.getElementById('pageCount').value) || 1;
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const img = new Image();
+        const { jsPDF } = window.jspdf; const pdf = new jsPDF(document.getElementById('orientation').value[0], 'mm', document.getElementById('pageSize').value);
+        const count = parseInt(document.getElementById('pageCount').value) || 1, svgData = new XMLSerializer().serializeToString(svg), img = new Image();
         await new Promise((r, j) => { img.onload = r; img.onerror = j; img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))); });
         const canvas = document.createElement('canvas'); canvas.width = currentW * 4; canvas.height = currentH * 4;
         const ctx = canvas.getContext('2d'); ctx.fillStyle = document.getElementById('paperColor').value; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        for (let i = 0; i < count; i++) { if (i > 0) pdf.addPage(); pdf.addImage(imgData, 'JPEG', 0, 0, currentW, currentH); }
+        const data = canvas.toDataURL('image/jpeg', 1.0);
+        for(let i=0; i<count; i++) { if(i>0) pdf.addPage(); pdf.addImage(data, 'JPEG', 0, 0, currentW, currentH); }
         pdf.save("BlankCanvas.pdf");
-    } catch (e) { alert("PDF Error: " + e.message); } finally { btn.innerText = "PDF"; btn.disabled = false; }
+    } catch(e) { alert(e.message); } finally { btn.innerText = "PDF"; btn.disabled = false; }
 }
-
 function exportPNG() {
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const canvas = document.createElement('canvas'); canvas.width = currentW * 10; canvas.height = currentH * 10;
+    const canvas = document.createElement('canvas'); canvas.width = currentW*10; canvas.height = currentH*10;
     const ctx = canvas.getContext('2d'); ctx.fillStyle = document.getElementById('paperColor').value; ctx.fillRect(0,0,canvas.width,canvas.height);
-    const img = new Image();
-    img.onload = () => { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const link = document.createElement("a"); link.href = canvas.toDataURL("image/png"); link.download = "BlankCanvas.png"; link.click(); };
-    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    const img = new Image(); img.onload = () => { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const l = document.createElement("a"); l.href = canvas.toDataURL("image/png"); l.download = "BlankCanvas.png"; l.click(); };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svg))));
 }
-
-function exportSVG() {
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const blob = new Blob([svgData], {type:'image/svg+xml;charset=utf-8'});
-    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "BlankCanvas.svg"; link.click();
-}
+function exportSVG() { const b = new Blob([new XMLSerializer().serializeToString(svg)], {type:'image/svg+xml;charset=utf-8'}); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = "BlankCanvas.svg"; l.click(); }
 
 updatePageLayout();
 </script>
