@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlankCanvas | Free Templates Download In 10 seconds</title>
+<title>BlankCanvas | Designer Paper Pro</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>if (window.jspdf) { window.jsPDF = window.jspdf.jsPDF; }</script>
@@ -97,6 +97,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 22
                 <select id="paperType" onchange="generatePaper()">
                     <option value="habit" selected>Habit Tracker</option>
                     <option value="daily">Daily Journal</option>
+                    <option value="bargolf">Bar Golf Scorecard</option>
                     <option value="calendar">Monthly Calendar</option>
                     <option value="workout">Workout Log</option>
                     <option value="checklist">Checklist</option>
@@ -158,8 +159,9 @@ const container = document.getElementById('container');
 let currentW = 210, currentH = 297, lastT = "";
 
 let templatePresets = {
-    habit: { spacing: 122, margin: 60, orientation: 'portrait' },     // 30.5mm standard
-    daily: { spacing: 25.2, margin: 60, orientation: 'portrait' },    // New Daily Journal
+    habit: { spacing: 122, margin: 60, orientation: 'portrait' },
+    daily: { spacing: 25.2, margin: 60, orientation: 'portrait' },    
+    bargolf: { spacing: 35, margin: 60, orientation: 'portrait' },
     workout: { spacing: 25.2, margin: 60, orientation: 'portrait' },  
     checklist: { spacing: 23.2, margin: 60, orientation: 'portrait' },
     weekly: { spacing: 26, margin: 60, orientation: 'portrait' },     
@@ -202,21 +204,14 @@ const templates = {
         let out = '';
         const side = ma || 15;
         const usableW = w - side * 2;
-        
-        // Minimalist Header
         out += `<g fill="${col}" font-family="Helvetica" text-anchor="middle">
             <text x="${w/2}" y="20" font-size="9" font-weight="900" letter-spacing="5">HABIT TRACKER</text>
             <text x="${w/2}" y="30" font-size="2.8" font-weight="bold" opacity="0.4">MONTH OF . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</text>
         </g>`;
-
         const drawHabit = (sY) => {
             let b = `<g transform="translate(${side}, ${sY})" fill="${col}" font-family="Helvetica">`;
-
-            // HABIT text + line ONLY
             b += `<text x="0" y="0" font-size="3.2" font-weight="bold">HABIT :</text>`;
             b += `<line x1="14" y1="0.5" x2="${usableW * 0.42}" y2="0.5" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
-
-            // Circles
             const startX = usableW * 0.45;
             for (let i = 1; i <= 31; i++) {
                 const cx = startX + ((i - 1) % 11) * 7;
@@ -224,38 +219,23 @@ const templates = {
                 b += `<circle cx="${cx}" cy="${cy}" r="2.6" fill="none" stroke="${col}" stroke-width="0.15" opacity="0.6"/>`;
                 b += `<text x="${cx}" y="${cy + 0.8}" font-size="1.8" text-anchor="middle" font-weight="bold" opacity="0.5">${i}</text>`;
             }
-
-            // GOAL line ONLY
             b += `<text x="0" y="22" font-size="2.5" font-weight="bold" opacity="0.6">GOAL :</text>`;
             b += `<line x1="12" y1="22.5" x2="${usableW * 0.42}" y2="22.5" stroke="${col}" stroke-width="0.15" opacity="0.3"/>`;
-
-            // REWARD line ONLY
             b += `<text x="${usableW * 0.45}" y="22" font-size="2.5" font-weight="bold" opacity="0.6">REWARD :</text>`;
             b += `<line x1="${usableW * 0.45 + 18}" y1="22.5" x2="${usableW}" y2="22.5" stroke="${col}" stroke-width="0.15" opacity="0.3"/>`;
-
             return b + `</g>`;
         };
-
-        let y = 48;
-        while (y + 30 < h) {
-            out += drawHabit(y);
-            y += sp;
-        }
-        return out;
+        let y = 48; while (y + 30 < h) { out += drawHabit(y); y += sp; } return out;
     },
     daily: (w, h, sp, ma, col) => {
         let out = ''; const side = ma || 15;
         const leftW = (w - side*2) * 0.55;
         const rightX = side + leftW + 10;
         const rightW = (w - side*2) * 0.45 - 10;
-
-        // LEFT COLUMN (Header + Lines)
         out += `<text x="${side}" y="20" font-family="Helvetica" font-size="6" font-weight="900" fill="${col}" letter-spacing="2">DAILY JOURNAL</text>`;
         for(let y = 35; y < h - side; y += sp) {
             out += `<line x1="${side}" y1="${y}" x2="${side + leftW}" y2="${y}" stroke="${col}" stroke-width="0.15" opacity="0.5"/>`;
         }
-
-        // RIGHT COLUMN
         let ry = 15;
         const addHeader = (title) => {
             out += `<text x="${rightX}" y="${ry}" font-family="Helvetica" font-size="2.2" font-weight="900" fill="${col}" letter-spacing="1">${title}</text>`;
@@ -263,12 +243,7 @@ const templates = {
             out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.3" opacity="0.8"/>`;
             ry += 4;
         };
-
-        // DATE
-        addHeader('DATE');
-        ry += 5;
-
-        // MOOD
+        addHeader('DATE'); ry += 5;
         addHeader('MOOD');
         for(let i=0; i<5; i++) {
             let cx = rightX + 4 + i*(rightW/5);
@@ -284,8 +259,6 @@ const templates = {
             out += `<path d="${mouth}" fill="none" stroke="${col}" stroke-width="0.2" stroke-linecap="round" opacity="0.6"/>`;
         }
         ry += 9;
-
-        // WATER INTAKE
         addHeader('WATER INTAKE');
         for(let i=0; i<8; i++) {
             let dx = rightX + 2.5 + i*(rightW/8.5);
@@ -293,39 +266,87 @@ const templates = {
             out += `<path d="M${dx} ${dy} C${dx+1.2} ${dy+1.5}, ${dx+1.2} ${dy+3.5}, ${dx} ${dy+3.5} C${dx-1.2} ${dy+3.5}, ${dx-1.2} ${dy+1.5}, ${dx} ${dy} Z" fill="none" stroke="${col}" stroke-width="0.2" opacity="0.6"/>`;
         }
         ry += 9;
-
-        // SLEEP
         addHeader('SLEEP');
         out += `<text x="${rightX + rightW}" y="${ry+3.5}" font-family="Helvetica" font-size="1.8" text-anchor="end" fill="${col}" opacity="0.6">Hours</text>`;
         out += `<line x1="${rightX}" y1="${ry+4}" x2="${rightX + rightW - 12}" y2="${ry+4}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
         ry += 10;
-
-        // AFFIRMATION
-        addHeader('AFFIRMATION');
-        ry += 15;
-
-        // GRATEFUL
+        addHeader('AFFIRMATION'); ry += 15;
         addHeader('I FEEL GRATEFUL FOR');
-        for(let i=0; i<3; i++) {
-            ry += sp;
-            out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
-        }
+        for(let i=0; i<3; i++) { ry += sp; out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`; }
         ry += 8;
-
-        // NOTES
         addHeader('NOTES');
-        while(ry + sp < h - side) {
-            ry += sp;
-            out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+        while(ry + sp < h - side) { ry += sp; out += `<line x1="${rightX}" y1="${ry}" x2="${rightX + rightW}" y2="${ry}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`; }
+        return out;
+    },
+    bargolf: (w, h, sp, ma, col) => {
+        let out = ''; const side = ma || 15; const usableW = w - side * 2;
+        out += `<g fill="${col}" font-family="Helvetica" text-anchor="middle">`;
+        out += `<text x="${w/2}" y="${side + 10}" font-size="10" font-weight="900" letter-spacing="4">BAR GOLF</text>`;
+        out += `<text x="${w/2}" y="${side + 18}" font-size="3" font-weight="bold" opacity="0.5">DATE . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</text>`;
+        out += `</g>`;
+        const startY = side + 30; const rowH = sp;
+        const cols = [
+            { name: "HOLE", w: usableW * 0.10 }, { name: "BAR", w: usableW * 0.28 },
+            { name: "DRINK", w: usableW * 0.28 }, { name: "PAR", w: usableW * 0.10 },
+            { name: "SCORE", w: usableW * 0.12 }, { name: "PENALTY", w: usableW * 0.12 }
+        ];
+        out += `<rect x="${side}" y="${startY}" width="${usableW}" height="${rowH}" fill="${col}" opacity="0.2"/>`;
+        let currX = side;
+        out += `<g fill="${col}" font-family="Helvetica" font-size="2.5" font-weight="900" text-anchor="middle">`;
+        cols.forEach(c => { out += `<text x="${currX + c.w/2}" y="${startY + rowH/2 + 1}">${c.name}</text>`; currX += c.w; });
+        out += `</g>`;
+        let y = startY + rowH;
+        for(let i=1; i<=10; i++) {
+            out += `<rect x="${side}" y="${y}" width="${usableW}" height="${rowH}" fill="none" stroke="${col}" stroke-width="0.3"/>`;
+            out += `<text x="${side + cols[0].w/2}" y="${y + rowH/2 + 1.5}" font-family="Helvetica" font-size="3.5" font-weight="bold" fill="${col}" text-anchor="middle">${i}</text>`;
+            let rowX = side; cols.forEach(c => { out += `<line x1="${rowX}" y1="${y}" x2="${rowX}" y2="${y + rowH}" stroke="${col}" stroke-width="0.3"/>`; rowX += c.w; });
+            y += rowH;
         }
-
+        const totalSpan = cols[0].w + cols[1].w + cols[2].w + cols[3].w;
+        out += `<rect x="${side}" y="${y}" width="${totalSpan}" height="${rowH}" fill="#A9D08E" opacity="0.2"/>`;
+        out += `<rect x="${side}" y="${y}" width="${usableW}" height="${rowH}" fill="none" stroke="${col}" stroke-width="0.3"/>`;
+        out += `<text x="${side + totalSpan - 5}" y="${y + rowH/2 + 1}" font-family="Helvetica" font-size="3.5" font-weight="900" fill="${col}" text-anchor="end">TOTAL:</text>`;
+        out += `<line x1="${side + totalSpan}" y1="${y}" x2="${side + totalSpan}" y2="${y + rowH}" stroke="${col}" stroke-width="0.3"/>`;
+        out += `<line x1="${side + totalSpan + cols[4].w}" y1="${y}" x2="${side + totalSpan + cols[4].w}" y2="${y + rowH}" stroke="${col}" stroke-width="0.3"/>`;
+        out += `<rect x="${side}" y="${startY}" width="${usableW}" height="${y + rowH - startY}" fill="none" stroke="${col}" stroke-width="0.6"/>`;
+        
+        // RULES & PENALTIES SECTION
+        let ry = y + rowH + 12;
+        out += `<g fill="${col}" font-family="Helvetica">`;
+        out += `<text x="${side}" y="${ry}" font-size="4" font-weight="900" letter-spacing="1.5">RULES & PENALTIES</text>`;
+        out += `<line x1="${side}" y1="${ry+2}" x2="${side+62}" y2="${ry+2}" stroke="${col}" stroke-width="0.5"/>`;
+        ry += 8;
+        
+        const rules = [
+            ["SPILLED DRINK", "+1 SHOT"], ["UNFINISHED DRINK", "+1 SHOT"],
+            ["DRY HOLE", "+1 SHOT"], ["DRINKING SAME DRINK IN A ROW", "+2 SHOT"],
+            ["VOMIT", "+3 SHOT"], ["DROPPED OR BROKEN GLASS", "+3 SHOT"],
+            ["DRINKING A DRINK NOT ON THE LIST", "+2 SHOT"], ["EARLY PICK-UP", "DISQUALIFIED"]
+        ];
+        
+        rules.forEach(r => {
+            if(ry < h - 10) {
+                out += `<circle cx="${side + 2}" cy="${ry - 1}" r="0.6" opacity="0.8"/>`;
+                out += `<text x="${side + 5}" y="${ry}" font-size="2.4" font-weight="bold" opacity="0.8">${r[0]}</text>`;
+                out += `<text x="${side + usableW}" y="${ry}" font-size="2.4" font-weight="900" text-anchor="end">${r[1]}</text>`;
+                // Dot leader
+                let startDots = side + 5 + r[0].length * 1.6;
+                let endDots = side + usableW - 15;
+                if(endDots > startDots) {
+                    out += `<line x1="${startDots}" y1="${ry-0.5}" x2="${endDots}" y2="${ry-0.5}" stroke="${col}" stroke-width="0.1" stroke-dasharray="0.5 1.5" opacity="0.3"/>`;
+                }
+                ry += 5;
+            }
+        });
+        out += `</g>`;
+        
         return out;
     },
     calendar: (w, h, sp, ma, col) => {
         let out = ''; const side = ma || 15, topM = 35, usableW = w-side*2, usableH = h-topM-15, cellW = usableW/7, cellH = usableH/5;
         const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
         out += `<g fill="${col}" font-family="Helvetica"><text x="${side}" y="18" font-size="9" font-weight="900" letter-spacing="3">MONTH</text><text x="${w-side}" y="18" font-size="9" font-weight="900" letter-spacing="3" text-anchor="end">YEAR</text>`;
-        out += `<line x1="${side}" y1="21" x2="${side+39}" y2="21" stroke="${col}" stroke-width="0.6"/><line x1="${w-side-31}" y1="21" x2="${w-side}" y2="21" stroke="${col}" stroke-width="0.6"/><rect x="${side}" y="${topM-12}" width="${usableW}" height="8" opacity="0.03"/>`;
+        out += `<line x1="${side}" y1="21" x2="${side+45}" y2="21" stroke="${col}" stroke-width="0.6"/><line x1="${w-side-34}" y1="21" x2="${w-side}" y2="21" stroke="${col}" stroke-width="0.6"/><rect x="${side}" y="${topM-12}" width="${usableW}" height="8" opacity="0.03"/>`;
         days.forEach((day, i) => out += `<text x="${side+(i*cellW)+(cellW/2)}" y="${topM-6.5}" font-size="2.8" font-weight="900" text-anchor="middle">${day}</text>`);
         for(let r=0; r<=5; r++) out += `<line x1="${side}" y1="${topM+r*cellH}" x2="${w-side}" y2="${topM+r*cellH}" stroke="${col}" stroke-width="${(r===0||r===5)?0.3:0.1}" opacity="${(r===0||r===5)?0.8:0.2}"/>`;
         for(let c=0; c<=7; c++) out += `<line x1="${side+c*cellW}" y1="${topM}" x2="${side+c*cellW}" y2="${h-15}" stroke="${col}" stroke-width="${(c===0||c===7)?0.3:0.1}" opacity="${(c===0||c===7)?0.8:0.2}"/>`;
@@ -336,13 +357,9 @@ const templates = {
         let out = ''; const side = ma || 15, usableW = w-side*2, logH = h/2;
         const drawLog = (yOff) => {
             let log = `<g transform="translate(${side}, ${yOff+12})" fill="${col}" font-family="Helvetica"><text x="0" y="0" font-size="5.5" font-weight="900" letter-spacing="2.5">WORKOUT LOG</text><line x1="0" y1="3" x2="${usableW}" y2="3" stroke="${col}" stroke-width="0.4" opacity="0.2"/>`;
-            
-            // Re-added Muscle Group and Duration logically inline with Date
-            const fY = 15; 
-            log += `<text x="0" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">DATE :</text><line x1="12" y1="${fY+0.5}" x2="${usableW*0.25}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
+            const fY = 15; log += `<text x="0" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">DATE :</text><line x1="12" y1="${fY+0.5}" x2="${usableW*0.25}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
             log += `<text x="${usableW*0.28}" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">MUSCLE GROUP :</text><line x1="${usableW*0.28+28}" y1="${fY+0.5}" x2="${usableW*0.68}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
             log += `<text x="${usableW*0.72}" y="${fY}" font-size="2.5" font-weight="bold" opacity="0.6">DURATION :</text><line x1="${usableW*0.72+20}" y1="${fY+0.5}" x2="${usableW}" y2="${fY+0.5}" stroke="${col}" stroke-width="0.15" opacity="0.4"/>`;
-            
             const rY = fY+16, c1W = usableW*0.35, sW = (usableW-c1W)/5;
             log += `<rect x="0" y="${rY}" width="${usableW}" height="${sp}" fill="${col}" opacity="0.04"/><text x="${c1W/2}" y="${rY+sp/2+0.8}" font-size="2.2" font-weight="bold" text-anchor="middle">EXERCISE</text>`;
             for(let i=1; i<=5; i++) log += `<text x="${c1W+(i-1)*sW+sW/2}" y="${rY+sp/2+0.8}" font-size="2" font-weight="bold" text-anchor="middle">SET ${i}</text>`;
@@ -473,4 +490,3 @@ updatePageLayout();
 <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </body>
 </html>
-
